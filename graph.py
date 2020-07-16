@@ -3,11 +3,20 @@ from Node import *
 
 class Graph:
     def __init__(self, start_node: Node):
+        """
+        initialise the Graph with the counter (z_value) on 0 and the start_node specified
+        :param start_node:
+        """
         self.start_node = start_node
         self.current_node = start_node
         self.z_value = 0
 
     def to_dot(self, filename):
+        """
+        make a visual representation of the graph
+        :param filename: the file in which the dot-code needs to be put
+        :return: Node
+        """
         f = open(filename, "w")
         # temp_current_node = self.current_node
         # self.current_node = self.start_node
