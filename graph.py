@@ -44,8 +44,7 @@ class Graph:
         :return: Node
         """
         f = open(filename, "w")
-        # temp_current_node = self.current_node
-        # self.current_node = self.start_node
+
         # do a BFS over the graph to find everything (that is connected to start_node)
         already_added = {self.start_node}
         already_visited = set()
@@ -68,7 +67,6 @@ class Graph:
 
         f.write("}\n")
 
-        # self.current_node = temp_current_node
         f.close()
 
     def bellman_ford_alg(self):
