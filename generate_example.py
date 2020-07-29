@@ -52,5 +52,5 @@ def generate_example():
     s13.add_disequality(130)
 
     g = Graph(s0)
-    g.set_nodes([s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13])
+    g.set_nodes([s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13])
     return g

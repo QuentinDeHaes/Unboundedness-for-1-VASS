@@ -71,3 +71,15 @@ class Graph:
         # self.current_node = temp_current_node
         f.close()
 
+    def bellman_ford_alg(self):
+        self.start_node.distance = 0
+        # bellmanb ford needs V-1 iterations to certainly have shortest path (without negative cycles)
+        for i in range(len(self.nodes)-1):
+            for node in self.nodes:
+                for edge in node.edges:
+                    edge[0].update_distance(node.distance + edge[1])
+
+
+        print("test")
+
+
