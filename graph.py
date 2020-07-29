@@ -69,6 +69,14 @@ class Graph:
 
         f.close()
 
+    def reset_distances(self):
+        """
+        reset all distances to infinity so bellman ford can be rerun
+        :return:
+        """
+        for node in self.nodes:
+            node.distance = math.inf
+
     def bellman_ford_alg(self):
         """
         excecute the bellman ford algorithm to get shortest path of nodes (will be used as base to find positive cycles
@@ -83,6 +91,39 @@ class Graph:
                     edge[0].update_distance(node.distance + edge[1])
 
 
+    def get_cycles(self):
+        """
+        we use bellman ford to find cycles, because we need positive cycles and it finds negative ones we simply negate
+        all values on edges
+        :return: a list of all nodes in cycles and their incrementation
+        """
+        # TODO check possible issue with node being in 2 different cycles
+        # TODO possible fix: use (node_out, node_in, incr), instead of (node_in, incr) to determine cycle and
+        #  generate entire cycles by out->in ==out ->in  where incr==incr, this could still have an issue with
+        #  multi-cycles on nodes where the incrementations are incorrect because +3 and +6 could become +3 on one and +3 on other
+        # issue: smaller value of s4 gets continued to s7, making it think s7 is part of a cycle
 
+        self.start_node.distance = 0
+        # bellman ford needs V-1 iterations to certainly have shortest path (without negative cycles)
+        for i in range(len(self.nodes) - 1):
+            # by going over all nodes and their outgoing edges, we go over all edges
+            for node in self.nodes:
+                for edge in node.edges:
+                    edge[0].update_distance(node.distance - edge[1])
+        # with this, we have done the regular bellman ford with negated values
+        # now we will check for more changes
+        nodes_in_cycles = set()
+        # the largest cycle will (in worst case ) have every node in the cycle, and with edges in reverse order,
+        # so we'll need to do this V*E times to be certain every cycle_node is found
+        for i in range(len(self.nodes)):
+            # by going over all nodes and their outgoing edges, we go over all edges
+            for node in self.nodes:
+                for edge in node.edges:
+                    # if ,after already doing entire bellman ford, there still is a change in the distance,
+                    # there exists a negative cycle, we will add this new node to the list (t
+                    if edge[0].distance > node.distance - edge[1]:
 
+                        nodes_in_cycles.add((edge[0], edge[0].distance - (node.distance - edge[1])))
+                        edge[0].update_distance(node.distance - edge[1])
 
+        return nodes_in_cycles
