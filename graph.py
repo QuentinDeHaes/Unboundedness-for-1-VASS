@@ -5,11 +5,37 @@ class Graph:
     def __init__(self, start_node: Node):
         """
         initialise the Graph with the counter (z_value) on 0 and the start_node specified
+        along with a list of all nodes within the graph
         :param start_node:
         """
         self.start_node = start_node
         self.current_node = start_node
         self.z_value = 0
+        self.nodes = {start_node}
+
+    def add_node(self, node):
+        """
+        add a node to the list of nodes
+        :param node:
+        :return:
+        """
+        self.nodes.add(node)
+
+    def get_nodes(self):
+        """
+        returns a list of all nodes in the graph
+        :return:
+        """
+        return self.nodes
+
+    def set_nodes(self, nodes):
+        """
+        set the list of nodes of the graph to nodes
+        :param nodes:
+        :return:
+        """
+        self.nodes = set(nodes)
+
 
     def to_dot(self, filename):
         """

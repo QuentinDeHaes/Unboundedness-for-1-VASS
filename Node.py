@@ -1,3 +1,4 @@
+import math
 class Node:
     """
     a single node from our graph
@@ -5,11 +6,13 @@ class Node:
     def __init__(self, id: int):
         """
         makes a new node, without any outgoing (or ingoing ) edges and no disequalities
+        for the bellman-ford algorithm we add a distance from start and set it to infinity
         :param id: the id of the node, needs to be unique for each node of the graph
         """
         self.id = id
         self.disequalities = set()
         self.edges = []
+        self.distance = math.inf
 
     def set_disequalities(self, disequalities):
         """
@@ -64,6 +67,31 @@ class Node:
         :return: None
         """
         self.edges = edges
+
+    def get_distance(self):
+        """
+        get the current distance from start-node
+        :return:
+        """
+        return self.distance
+
+    def set_distance(self, distance):
+        """
+        set the current distance from start-node
+        :param distance:
+        :return:
+        """
+        self.distance = distance
+
+    def update_distance(self, new_distance):
+        """
+        update the current distance from start-node if new_distance is smaller than current distance
+        :param new_distance:
+        :return:
+        """
+        if new_distance< self.distance:
+            self.distance = new_distance
+        return self.distance
 
     def dot_value(self):
         """
