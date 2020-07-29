@@ -72,14 +72,19 @@ class Graph:
         f.close()
 
     def bellman_ford_alg(self):
+        """
+        excecute the bellman ford algorithm to get shortest path of nodes (will be used as base to find positive cycles
+        :return:
+        """
         self.start_node.distance = 0
-        # bellmanb ford needs V-1 iterations to certainly have shortest path (without negative cycles)
+        # bellman ford needs V-1 iterations to certainly have shortest path (without negative cycles)
         for i in range(len(self.nodes)-1):
+            # by going over all nodes and their outgoing edges, we go over all edges
             for node in self.nodes:
                 for edge in node.edges:
                     edge[0].update_distance(node.distance + edge[1])
 
 
-        print("test")
+
 
 
