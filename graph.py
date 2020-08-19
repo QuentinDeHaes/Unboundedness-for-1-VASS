@@ -1,5 +1,5 @@
 from Node import *
-
+from frozenlist import FrozenList
 
 class Graph:
     def __init__(self, start_node: Node):
@@ -112,18 +112,65 @@ class Graph:
                     edge[0].update_distance(node.distance - edge[1])
         # with this, we have done the regular bellman ford with negated values
         # now we will check for more changes
-        nodes_in_cycles = set()
-        # the largest cycle will (in worst case ) have every node in the cycle, and with edges in reverse order,
-        # so we'll need to do this V*E times to be certain every cycle_node is found
-        for i in range(len(self.nodes)):
-            # by going over all nodes and their outgoing edges, we go over all edges
+        edges_in_cycles = set()
+        possible_cycles = set()
+        complete_cycles = set()
+        # we test whether a (positive) cycle actually exists, this takes E time
+        change = False
+        # by going over all nodes and their outgoing edges, we go over all edges
+        for node in self.nodes:
+            for edge in node.edges:
+                # if ,after already doing entire bellman ford, there still is a change in the distance,
+                # there exists a negative cycle, we will add this new node to the list
+                if edge[0].distance > node.distance - edge[1]:
+                    change = True
+                    # add the update-able nodes and their incoming edge in a list to update after this run
+                    # over all edges
+                    edges_in_cycles.add((node, edge[0], edge[1]))
+
+                    if node.id == edge[0].id:
+                        # if the node has an edge to itself, it is in a cycle with only itself
+                        complete_cycles.add(((node, node), edge[1]))
+                    else:
+                        # otherwise it is possibly a cycle with others,
+                        # so we set the current path and the amount it is currently increased with
+                        possible_cycles.add(((node, edge[0]), edge[1]))
+
+        # if nothing changed there are no positive cycles and we can quit
+        if not change:
+            return set()
+
+        # now that we're here, we know a (positive) cycle actually exists
+        # the largest cycle will (in worst case ) have every node in the cycle, so we'll need to check for V times
+        # to ensure we have checked for every cycle, since we've already done it once to ensure we have cycles we'll do
+        # it V-1 times more
+        for i in range(len(self.nodes)-1):
+
+            # update distances from previous run
+            for edge in edges_in_cycles:
+                edge[1].update_distance(edge[0].distance - edge[2])
+            edges_in_cycles = set()
+
             for node in self.nodes:
                 for edge in node.edges:
                     # if ,after already doing entire bellman ford, there still is a change in the distance,
-                    # there exists a negative cycle, we will add this new node to the list (t
+                    # there exists a negative cycle, we will add this new node to the list
                     if edge[0].distance > node.distance - edge[1]:
 
-                        nodes_in_cycles.add((edge[0], edge[0].distance - (node.distance - edge[1])))
-                        edge[0].update_distance(node.distance - edge[1])
+                        edges_in_cycles.add((node, edge[0], edge[1]))
 
-        return nodes_in_cycles
+            # we check whether  the edge can be added to our prospective cycles
+            new_possible_cycles = set()
+            for edge in edges_in_cycles:
+                for cycle in possible_cycles:
+                    if edge[0] == cycle[0][-1]:
+                        # if the newest node is our first node, the cycle is complete
+                        if cycle[0][0] == edge[1]:
+                            # the cycle is complete so we add it to complete_cycles
+                            complete_cycles.add((cycle[0]+(edge[1],), cycle[1]+ edge[2]))
+                        else:
+                            # the cycle isn't finished so we add it to the new   possible cycles
+                            new_possible_cycles.add((cycle[0]+(edge[1],), cycle[1] + edge[2]))
+            possible_cycles = new_possible_cycles
+
+        return complete_cycles
