@@ -95,12 +95,15 @@ class Graph:
         we use bellman ford to find cycles, because we need positive cycles and it finds negative ones we simply negate
         all values on edges
         :return: a list of all nodes in cycles and their incrementation
+        - the initial bellman part is O(VE)
+        - the next part is only a single bellamn run so O(E)
+        - and the final part is V-1 times O(V³E) so in total O(V⁴E)
         """
         # TODO check possible issue with node being in 2 different cycles
-        # TODO possible fix: use (node_out, node_in, incr), instead of (node_in, incr) to determine cycle and
-        #  generate entire cycles by out->in ==out ->in  where incr==incr, this could still have an issue with
-        #  multi-cycles on nodes where the incrementations are incorrect because +3 and +6 could become +3 on one and +3 on other
-        # issue: smaller value of s4 gets continued to s7, making it think s7 is part of a cycle
+        # TODO possible issue with 2 cycles sharing nodes splitting and coming back with where
+        #  split has identical weight but different amount of nodes: can be fixed by making every cycle and
+        #  prospective cycle run 1 by one in (and update 1 by 1) but this will end in far less efficiency still
+        #
 
         self.start_node.distance = 0
         # bellman ford needs V-1 iterations to certainly have shortest path (without negative cycles)
@@ -146,10 +149,12 @@ class Graph:
         for i in range(len(self.nodes)-1):
 
             # update distances from previous run
+            # O(E)
             for edge in edges_in_cycles:
                 edge[1].update_distance(edge[0].distance - edge[2])
             edges_in_cycles = set()
 
+            # O(E)
             for node in self.nodes:
                 for edge in node.edges:
                     # if ,after already doing entire bellman ford, there still is a change in the distance,
@@ -158,17 +163,24 @@ class Graph:
 
                         edges_in_cycles.add((node, edge[0], edge[1]))
 
-            # we check whether  the edge can be added to our prospective cycles
+            # we check whether the edge can be added to our prospective cycles
             new_possible_cycles = set()
             for edge in edges_in_cycles:
+                # every edge can only be in here once at a time, making this O(E)
                 for cycle in possible_cycles:
+                    # because we know the maximum size of a cycle is V and the way this is constructed
+                    # and possible_cycles can only have V! entries, which falls under O(V²)
+                    # making these forloops O(EV³)
                     if edge[0] == cycle[0][-1]:
                         # if the newest node is our first node, the cycle is complete
                         if cycle[0][0] == edge[1]:
                             # the cycle is complete so we add it to complete_cycles
                             complete_cycles.add((cycle[0]+(edge[1],), cycle[1]+ edge[2]))
-                        else:
-                            # the cycle isn't finished so we add it to the new   possible cycles
+                        elif edge[1] not in cycle[0]:
+                            # the cycle isn't finished so we add it to the new possible cycles,
+                            # if a subsidiary cycle is found, that cycle will also be found elsewhere
+                            # and we no longer need this part
+
                             new_possible_cycles.add((cycle[0]+(edge[1],), cycle[1] + edge[2]))
             possible_cycles = new_possible_cycles
 
