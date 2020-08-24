@@ -1,5 +1,5 @@
 from Node import *
-
+from helper_functions import *
 
 class Graph:
     def __init__(self, start_node: Node):
@@ -183,3 +183,37 @@ class Graph:
             possible_cycles = new_possible_cycles
 
         return complete_cycles
+
+    def set_non_allowable_values(self, complete_cycles):
+        """
+        set on each node on which values, the cycle can't be taken
+        :param complete_cycles: the cycles as received by the get_cycles method
+        :return:None (the changes happen on the node-classes)
+        this code is O(V⁴)
+        """
+        # TODO ensure node within 2 cycles does not overwrite the not_allowed
+        # per cycle we run this code (at most O(V²) )
+        for cycle in complete_cycles:
+
+            # distances is O(V*E)
+            distances = get_distances_in_path(cycle[0])
+
+            # for each node in the cycle we run this the code (this loop  is O(V))
+            for node_i in range(len(cycle[0])-1):
+                not_allowed = []
+                current_add = 0
+
+                #on the node itself we can't run the cycle if it's it's disequality -
+                not_allowed += [num - cycle[1] for num in cycle[0][:-1][node_i].get_disequalities()]
+                current_add += distances[node_i % (len(cycle[0]) - 1)]
+                # we run over every edge in the cycle (also O(V))
+                for j in range(1,len(distances)):
+                    not_allowed += [num - current_add for num in
+                                           cycle[0][:-1][(node_i+j) % (len(cycle[0])-1)].get_disequalities()]
+
+                    current_add += distances[(node_i+j) % (len(cycle[0])-1)]
+                cycle[0][node_i].non_cyclables = not_allowed
+
+
+
+
