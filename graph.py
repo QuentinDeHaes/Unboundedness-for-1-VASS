@@ -203,7 +203,6 @@ class Graph:
                 not_allowed = []
                 current_add = 0
 
-                #on the node itself we can't run the cycle if it's it's disequality -
                 not_allowed += [num - cycle[1] for num in cycle[0][:-1][node_i].get_disequalities()]
                 current_add += distances[node_i % (len(cycle[0]) - 1)]
                 # we run over every edge in the cycle (also O(V))
