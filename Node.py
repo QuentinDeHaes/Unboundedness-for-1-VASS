@@ -1,8 +1,11 @@
 import math
+
+
 class Node:
     """
     a single node from our graph
     """
+
     def __init__(self, id: int):
         """
         makes a new node, without any outgoing (or ingoing ) edges and no disequalities
@@ -20,7 +23,7 @@ class Node:
         :param disequalities: the new disequalities of the node
         :return: None
         """
-        self.disequalities= set(disequalities)
+        self.disequalities = set(disequalities)
 
     def get_disequalities(self):
         """
@@ -89,7 +92,7 @@ class Node:
         :param new_distance:
         :return:
         """
-        if new_distance< self.distance:
+        if new_distance < self.distance:
             self.distance = new_distance
         return self.distance
 
@@ -99,7 +102,7 @@ class Node:
         :return: the string on how to represent the node in dot
         """
         val = "\"s{}\"[label = \" s{} ".format(self.id, self.id)
-        if len(self.disequalities ) != 0:
+        if len(self.disequalities) != 0:
             val += "\\n != {} ".format(','.join(str(x) for x in self.disequalities))
         val += "\"]"
         return val
@@ -109,6 +112,7 @@ class NodeCreator:
     """
     a helperclass to create nodes and ensure no double ids
     """
+
     def __init__(self):
         """
         initialise the first id for a node on 0
@@ -120,6 +124,6 @@ class NodeCreator:
         create a node with a new id, increase counter and return node
         :return: node
         """
-        node =Node(self.current_id)
+        node = Node(self.current_id)
         self.current_id += 1
         return node

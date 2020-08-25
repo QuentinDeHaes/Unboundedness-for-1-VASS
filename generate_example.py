@@ -1,5 +1,7 @@
 from graph import Graph
 from Node import Node, NodeCreator
+
+
 def generate_example():
     """
     generates the example graph from the paper

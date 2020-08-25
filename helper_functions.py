@@ -1,5 +1,7 @@
 import Node
 import graph
+
+
 def get_distances_in_path(path: tuple):
     """
     give a path of nodes, it will give the weight of the edges between each of the nodes
@@ -8,10 +10,10 @@ def get_distances_in_path(path: tuple):
     this method is O(X* E) withX being the size of the path
     """
     distances = []
-    for i in range(len(path)-1):
+    for i in range(len(path) - 1):
         found = False
         for edge in path[i].edges:
-            if edge[0].id == path[i+1].id:
+            if edge[0].id == path[i + 1].id:
                 distances.append(edge[1])
                 found = True
                 break

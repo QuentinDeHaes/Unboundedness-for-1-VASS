@@ -1,6 +1,7 @@
 from Node import *
 from helper_functions import *
 
+
 class Graph:
     def __init__(self, start_node: Node):
         """
@@ -199,20 +200,16 @@ class Graph:
             distances = get_distances_in_path(cycle[0])
 
             # for each node in the cycle we run this the code (this loop  is O(V))
-            for node_i in range(len(cycle[0])-1):
+            for node_i in range(len(cycle[0]) - 1):
                 not_allowed = []
                 current_add = 0
 
                 not_allowed += [num - cycle[1] for num in cycle[0][:-1][node_i].get_disequalities()]
                 current_add += distances[node_i % (len(cycle[0]) - 1)]
                 # we run over every edge in the cycle (also O(V))
-                for j in range(1,len(distances)):
+                for j in range(1, len(distances)):
                     not_allowed += [num - current_add for num in
-                                           cycle[0][:-1][(node_i+j) % (len(cycle[0])-1)].get_disequalities()]
+                                    cycle[0][:-1][(node_i + j) % (len(cycle[0]) - 1)].get_disequalities()]
 
-                    current_add += distances[(node_i+j) % (len(cycle[0])-1)]
+                    current_add += distances[(node_i + j) % (len(cycle[0]) - 1)]
                 cycle[0][node_i].non_cyclables = not_allowed
-
-
-
-
