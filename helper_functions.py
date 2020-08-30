@@ -41,13 +41,19 @@ def set_non_allowable_values(complete_cycles):
         for node_i in range(len(cycle[0]) - 1):
             not_allowed = []
             current_add = 0
+            minimal_add = 0
 
             not_allowed += [num - cycle[1] for num in cycle[0][:-1][node_i].get_disequalities()]
             current_add += distances[node_i % (len(cycle[0]) - 1)]
+            if current_add < minimal_add:
+                minimal_add = current_add
             # we run over every edge in the cycle (also O(V))
             for j in range(1, len(distances)):
                 not_allowed += [num - current_add for num in
                                 cycle[0][:-1][(node_i + j) % (len(cycle[0]) - 1)].get_disequalities()]
 
                 current_add += distances[(node_i + j) % (len(cycle[0]) - 1)]
+                if current_add < minimal_add:
+                    minimal_add = current_add
             cycle[0][node_i].non_cyclables = not_allowed
+            cycle[0][node_i].minimal_cyclable = -minimal_add
