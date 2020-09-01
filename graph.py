@@ -106,6 +106,7 @@ class Graph:
         #
 
         self.start_node.distance = 0
+        self.cycles = dict()
         # bellman ford needs V-1 iterations to certainly have shortest path (without negative cycles)
         for i in range(len(self.nodes) - 1):
             # by going over all nodes and their outgoing edges, we go over all edges
@@ -133,6 +134,7 @@ class Graph:
                     if node.id == edge[0].id:
                         # if the node has an edge to itself, it is in a cycle with only itself
                         complete_cycles.add(((node, node), edge[1]))
+                        self.cycles[((node, node), edge[1])] = len(complete_cycles)
                     else:
                         # otherwise it is possibly a cycle with others,
                         # so we set the current path and the amount it is currently increased with
@@ -175,6 +177,7 @@ class Graph:
                         if cycle[0][0] == edge[1]:
                             # the cycle is complete so we add it to complete_cycles
                             complete_cycles.add((cycle[0] + (edge[1],), cycle[1] + edge[2]))
+                            self.cycles[(cycle[0] + (edge[1],), cycle[1] + edge[2])] = len(complete_cycles)
                         elif edge[1] not in cycle[0]:
                             # the cycle isn't finished so we add it to the new possible cycles,
                             # if a subsidiary cycle is found, that cycle will also be found elsewhere
@@ -184,4 +187,41 @@ class Graph:
             possible_cycles = new_possible_cycles
 
         return complete_cycles
+
+    def set_non_allowable_values(self, complete_cycles):
+        """
+        set on each node on which values, the cycle can't be taken
+        :param complete_cycles: the cycles as received by the get_cycles method
+        :return:None (the changes happen on the node-classes)
+        this code is O(V⁴)
+        """
+        # per cycle we run this code (at most O(V²))
+        for cycle in complete_cycles:
+
+            # distances is O(V*E)
+            distances = get_distances_in_path(cycle[0])
+
+            # for each node in the cycle we run this the code (this loop  is O(V))
+            for node_i in range(len(cycle[0]) - 1):
+                not_allowed = []
+                current_add = 0
+                minimal_add = 0
+
+                not_allowed += [num - cycle[1] for num in cycle[0][:-1][node_i].get_disequalities()]
+                current_add += distances[node_i % (len(cycle[0]) - 1)]
+                if current_add < minimal_add:
+                    minimal_add = current_add
+                # we run over every edge in the cycle (also O(V))
+                for j in range(1, len(distances)):
+                    not_allowed += [num - current_add for num in
+                                    cycle[0][:-1][(node_i + j) % (len(cycle[0]) - 1)].get_disequalities()]
+
+                    current_add += distances[(node_i + j) % (len(cycle[0]) - 1)]
+                    if current_add < minimal_add:
+                        minimal_add = current_add
+                if not hasattr(cycle[0][node_i], 'non_cyclables'):
+                    cycle[0][node_i].non_cyclables = []
+                    cycle[0][node_i].minimal_cyclable = []
+                cycle[0][node_i].non_cyclables .append((self.cycles[cycle], not_allowed))
+                cycle[0][node_i].minimal_cyclable .append((self.cycles[cycle], -minimal_add))
 
