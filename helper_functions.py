@@ -23,3 +23,30 @@ def get_distances_in_path(path: tuple):
     return tuple(distances)
 
 
+def cleanup_non_cyclables(non_cyclables, cyclabe_increase: int, minimal_cyclable: int):
+    """
+    clean the non_cyclables so that each chain has only one value, and each value below minimal is removed
+    :param non_cyclables: the disequalities whether we allow taking the cycle
+    :param cyclabe_increase: the amount with which the countervalue increased when taking the cycle
+    :param minimal_cyclable: the minimal countervalue to take the value
+    :return: a dict where each chain has it's own bounded value
+    O(V) if maximum amount of disequalities per node is fixed
+    # the amount of chains that are bounded is also limited by the minimum between the positive_cycle_value
+    # and the amount of disequalities, which makes us bounded by O(V) as long as
+    # the amount of disequalities is fixed
+    """
+    cleaned_non_cyclables = dict()
+    for non_cyclable in non_cyclables:
+        if non_cyclable < minimal_cyclable:
+            continue
+
+        value = (non_cyclable % cyclabe_increase)
+
+        if value in cleaned_non_cyclables:
+            if non_cyclable > cleaned_non_cyclables[non_cyclable % cyclabe_increase]:
+                cleaned_non_cyclables[value] = non_cyclable
+
+        else:
+            cleaned_non_cyclables[value] = non_cyclable
+
+    return cleaned_non_cyclables

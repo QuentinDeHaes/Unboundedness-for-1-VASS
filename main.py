@@ -8,4 +8,5 @@ if __name__ == "__main__":
     g.bellman_ford_alg()
     cycles = g.get_cycles()
     g.set_non_allowable_values(cycles)
+    g.get_bounded_chains(cycles)
     g.to_dot("dot.dot")

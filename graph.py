@@ -182,8 +182,8 @@ class Graph:
                             # the cycle isn't finished so we add it to the new possible cycles,
                             # if a subsidiary cycle is found, that cycle will also be found elsewhere
                             # and we no longer need this part
-
                             new_possible_cycles.add((cycle[0] + (edge[1],), cycle[1] + edge[2]))
+
             possible_cycles = new_possible_cycles
 
         return complete_cycles
@@ -211,6 +211,7 @@ class Graph:
                 current_add += distances[node_i % (len(cycle[0]) - 1)]
                 if current_add < minimal_add:
                     minimal_add = current_add
+
                 # we run over every edge in the cycle (also O(V))
                 for j in range(1, len(distances)):
                     not_allowed += [num - current_add for num in
@@ -219,9 +220,45 @@ class Graph:
                     current_add += distances[(node_i + j) % (len(cycle[0]) - 1)]
                     if current_add < minimal_add:
                         minimal_add = current_add
-                if not hasattr(cycle[0][node_i], 'non_cyclables'):
-                    cycle[0][node_i].non_cyclables = []
-                    cycle[0][node_i].minimal_cyclable = []
-                cycle[0][node_i].non_cyclables .append((self.cycles[cycle], not_allowed))
-                cycle[0][node_i].minimal_cyclable .append((self.cycles[cycle], -minimal_add))
 
+                if not hasattr(cycle[0][node_i], 'non_cyclables'):
+                    cycle[0][node_i].non_cyclables = dict()
+                    cycle[0][node_i].minimal_cyclable = dict()
+
+                cycle[0][node_i].non_cyclables[self.cycles[cycle]] = not_allowed
+                cycle[0][node_i].minimal_cyclable[self.cycles[cycle]] = -minimal_add
+
+    def get_bounded_chains(self, complete_cycles):
+        """
+        for our algorithm, we need U₀, which is the unbounded chains from the positive cycles, they are unbounded,
+        thus they can't be represented that easily, but the complement, the bounded chains can.
+        :param complete_cycles: the cycles as received by the get_cycles method
+        :return: None (the changes happen on the node-classes)
+        O(V⁴*X) with X being linear, but based on the size of the disequality
+        """
+
+        # O(V²) to run over all cycles
+        for cycle in complete_cycles:
+            # O(V) to run over an entire cycle
+            for node_i in range(len(cycle[0]) - 1):
+
+                if not hasattr(cycle[0][node_i], 'bounded_chains'):
+                    cycle[0][node_i].bounded_chains = dict()
+
+                bounded_chains = []
+                non_cyclables = cycle[0][node_i].non_cyclables[self.cycles[cycle]]
+                minimal_cyclable = cycle[0][node_i].minimal_cyclable[self.cycles[cycle]]
+                positive_cycle_value = cycle[1]
+
+                # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
+                non_cyclables = cleanup_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
+                # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
+                for key in non_cyclables:
+                    value = int(minimal_cyclable/positive_cycle_value) * positive_cycle_value + key
+                    # O(X) this is linear, but based on the size of the disequality
+                    # (and based on the amount a cycle increments the countervalue with)
+                    while value <= non_cyclables[key]:
+                        bounded_chains.append(value)
+                        value += positive_cycle_value
+
+                cycle[0][node_i].bounded_chains[self.cycles[cycle]] = bounded_chains
