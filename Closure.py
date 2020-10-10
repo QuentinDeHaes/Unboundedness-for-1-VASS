@@ -10,3 +10,15 @@ class Closure:
         self.maxVal = maxVal
         self.step = step
 
+    def is_in(self, value):
+        """
+        gives a boolean value to check whether the value is within the closure
+        :param value: the value to be checked
+        :return: True or False depending of whether it's part of the closure
+        """
+
+        if (self.minVal < value or self.minVal is None) and (value < self.maxVal or self.maxVal is None):
+            if value%self.step == self.minVal%self.step:
+                return True
+        return False
+
