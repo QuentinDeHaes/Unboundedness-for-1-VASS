@@ -15,10 +15,10 @@ class Closure:
         gives a boolean value to check whether the value is within the closure
         :param value: the value to be checked
         :return: True or False depending of whether it's part of the closure
+        O(1) as amount of steps is constant
         """
 
         if (self.minVal < value or self.minVal is None) and (value < self.maxVal or self.maxVal is None):
-            if value%self.step == self.minVal%self.step:
+            if (self.minVal is None and value%self.step == self.maxVal %self.step) or (value % self.step == self.minVal % self.step) :
                 return True
         return False
-
