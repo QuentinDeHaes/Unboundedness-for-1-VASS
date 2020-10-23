@@ -7,11 +7,15 @@ class Closure:
         :param maxVal: the maximal value in the closure (None to make it upward closed)
         :param step: the step to use in the closure
         """
+        if maxVal is not None and minVal is not None and maxVal< minVal:
+            temp = maxVal
+            maxVal = minVal
+            minVal = temp
         self.minVal = minVal
         self.maxVal = maxVal
         self.step = step
 
-    def is_in(self, value):
+    def __contains__(self, value):
         """
         gives a boolean value to check whether the value is within the closure
         :param value: the value to be checked
