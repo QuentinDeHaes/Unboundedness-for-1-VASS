@@ -1,3 +1,4 @@
+import math
 class Closure:
     def __init__(self, minVal, maxVal, step):
         """
@@ -22,3 +23,18 @@ class Closure:
             if (self.minVal is None and value%self.step == self.maxVal %self.step) or (value % self.step == self.minVal % self.step) :
                 return True
         return False
+
+    def __len__(self):
+        if self.minVal is None or self.maxVal is None:
+            return math.inf
+
+        return (self.maxVal-self.minVal)/self.step +1
+
+    def __getitem__(self, item):
+        if self.minVal is None:
+            raise Exception("no minimal value")
+
+        if item >= len(self):
+            raise Exception("value out of bounds")
+        return self.minVal+ self.step*item
+
