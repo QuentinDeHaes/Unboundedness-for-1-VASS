@@ -323,3 +323,15 @@ class Graph:
                     bounded_chains[node_i].add(Closure(value, non_cyclables[key], positive_cycle_value))
 
         return bounded_chains
+
+    def top(self):
+        """
+        calculate the top(Q) of the graph, this is simply a calculation of the amout of values we need to test from each top of a bounded chain
+        :return: top(Q)
+        this is constant efficiëncy O(1)
+        """
+        Q = len(self.nodes)
+        poly2Q = (Q*Q+2)* (Q+1) +1
+        P_Q = (2*Q*Q) *(Q*Q+2)* (Q+1)+ Q*(2*Q+1)* poly2Q
+        top = 2*Q*Q * P_Q
+        return top
