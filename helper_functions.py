@@ -23,7 +23,7 @@ def get_distances_in_path(path: tuple):
     return tuple(distances)
 
 
-def cleanup_non_cyclables(non_cyclables, cyclabe_increase: int, minimal_cyclable: int):
+def DEPRECATED_cleanup_non_cyclables_DEPRECATED(non_cyclables, cyclabe_increase: int, minimal_cyclable: int):
     """
     clean the non_cyclables so that each chain has only one value, and each value below minimal is removed
     :param non_cyclables: the disequalities whether we allow taking the cycle
@@ -48,5 +48,40 @@ def cleanup_non_cyclables(non_cyclables, cyclabe_increase: int, minimal_cyclable
 
         else:
             cleaned_non_cyclables[value] = non_cyclable
+
+    return cleaned_non_cyclables
+
+
+def cleanup_non_cyclables(non_cyclables, cyclabe_increase: int, minimal_cyclable: int):
+    """
+    clean the non_cyclables so that each chain has it's non-allowed values ordered
+    :param non_cyclables: the disequalities whether we allow taking the cycle
+    :param cyclabe_increase: the amount with which the countervalue increased when taking the cycle
+    :param minimal_cyclable: the minimal countervalue to take the value
+    :return: a dict where each chain has it's own bounded value
+    O(V²) if maximum amount of disequalities per node is fixed because of sort
+    # the amount of chains that are bounded is also limited by the minimum between the positive_cycle_value
+    # and the amount of disequalities, which makes us bounded by O(V) as long as
+    # the amount of disequalities is fixed
+    """
+    cleaned_non_cyclables = dict()
+    for non_cyclable in non_cyclables:
+
+        # values not cyclable because they would cause negative counter need not be considered
+        if non_cyclable < minimal_cyclable:
+            continue
+
+
+        value = (non_cyclable % cyclabe_increase) #check which chain we need to consider
+
+        if value in cleaned_non_cyclables: #check wether th chain already has values or not
+
+            cleaned_non_cyclables[value] .append(non_cyclable)
+
+        else:
+            cleaned_non_cyclables[value] = [non_cyclable]
+
+        for key in cleaned_non_cyclables: #in the end, we need all values in a sorted order, so we'll simply sort at the end
+            cleaned_non_cyclables[key]= sorted(cleaned_non_cyclables[key])
 
     return cleaned_non_cyclables

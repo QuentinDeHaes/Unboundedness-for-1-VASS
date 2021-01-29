@@ -313,7 +313,6 @@ class Graph:
         """
         in order to continue our algorithm, we need the bounded chains, so we'll calculate them
         O(V⁴)
-
         """
         # TODO remove the singularization of closures in the same thingie, make it 2 different closures
         #  from A to B and from B to C instead of A to C
@@ -327,14 +326,18 @@ class Graph:
                 minimal_cyclable = cycle[0][node_i].minimal_cyclable[self.cycles[cycle]]
                 positive_cycle_value = cycle[1]
 
-                # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
+                # O(V²) as long as we assume that the maximum amount of disequalities a node can have is fixed
                 non_cyclables = cleanup_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
                 # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
                 for key in non_cyclables:
                     value = int(minimal_cyclable / positive_cycle_value) * positive_cycle_value + key
                     if node_i not in bounded_chains:
-                        bounded_chains[node_i] = set()
-                    bounded_chains[node_i].add(Closure(value, non_cyclables[key], positive_cycle_value))
+                        bounded_chains[node_i] = set() #create the bounded chains of the node if they do not yet exist
+                    non_cyclables[key].insert(0, value)
+
+                    for i in range(len(non_cyclables[key])-1): #create all closure used for the chain
+
+                        bounded_chains[node_i].add(Closure(non_cyclables[key][i], non_cyclables[key][i+1], positive_cycle_value))
 
         return bounded_chains
 
