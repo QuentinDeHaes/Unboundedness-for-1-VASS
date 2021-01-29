@@ -1,7 +1,7 @@
 from Node import *
 from helper_functions import *
 from Closure import *
-
+from copy import copy, deepcopy
 
 class Graph:
     def __init__(self, start_node: Node):
@@ -15,7 +15,7 @@ class Graph:
         self.z_value = 0
         self.nodes = {start_node}
 
-    def add_node(self, node):
+    def add_node(self, node: Node):
         """
         add a node to the list of nodes
         :param node:
@@ -37,6 +37,17 @@ class Graph:
         :return:
         """
         self.nodes = set(nodes)
+
+    def __copy__(self):
+        """
+        create a new copy of the current graph
+        :return: copy (Graph)
+        """
+        cop = Graph(self.start_node.copy())
+        cop.current_node = self.current_node.copy()
+        cop.z_value = self.z_value
+        cop.nodes = deepcopy(self.nodes)
+        return cop
 
     def to_dot(self, filename):
         """
@@ -302,7 +313,10 @@ class Graph:
         """
         in order to continue our algorithm, we need the bounded chains, so we'll calculate them
         O(V⁴)
+
         """
+        # TODO remove the singularization of closures in the same thingie, make it 2 different closures
+        #  from A to B and from B to C instead of A to C
         bounded_chains = dict(set())
         # O(V²) to run over all cycles
         for cycle in complete_cycles:

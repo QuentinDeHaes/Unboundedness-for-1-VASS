@@ -1,5 +1,5 @@
 import math
-
+from copy import copy
 
 class Node:
     """
@@ -31,6 +31,17 @@ class Node:
         :return: the disequalities of the node
         """
         return self.disequalities
+
+    def __copy__(self):
+        """
+        create a copy of the current node
+        :return: copy (Node)
+        """
+        cop = Node(self.get_id())
+        cop.disequalities = self.get_disequalities().copy()
+        cop.edges = self.get_edges().copy()
+        cop.distance = self.get_distance()
+        return cop
 
     def add_disequality(self, disequality):
         """
