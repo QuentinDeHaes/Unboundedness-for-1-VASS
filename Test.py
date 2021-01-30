@@ -1,6 +1,6 @@
 import unittest
 from graph import Graph
-from  Node import Node
+from Node import Node
 from generate_example import generate_example
 from helper_functions import *
 from Closure import Closure
@@ -8,7 +8,6 @@ import math
 
 
 class MyTestCase(unittest.TestCase):
-
     g = generate_example()
     s0 = g.start_node
     s1 = s0.get_edges()[0][0]
@@ -25,7 +24,6 @@ class MyTestCase(unittest.TestCase):
     s12 = s11.get_edges()[0][0]
     s13 = s12.get_edges()[0][0]
 
-
     def test_base(self):
         self.assertEqual(True, True)
         self.assertEqual(False, False)
@@ -34,11 +32,10 @@ class MyTestCase(unittest.TestCase):
     def test_helper_functions(self):
 
         value = get_distances_in_path((self.s0, self.s1, self.s3))
-        self.assertEqual(value, (12,12), "distances in the path of nodes does not work")
+        self.assertEqual(value, (12, 12), "distances in the path of nodes does not work")
 
-
-        value = chain_max_non_cyclables([1,2,5,6,8,9,12], 4, 4)
-        compare_dict = {0:12, 1:9, 2:6}
+        value = chain_max_non_cyclables([1, 2, 5, 6, 8, 9, 12], 4, 4)
+        compare_dict = {0: 12, 1: 9, 2: 6}
         self.assertEqual(value, compare_dict, "chain_max_non_cyclables not working")
 
         value = cleanup_non_cyclables([1, 2, 5, 6, 8, 9, 12], 4, 4)
@@ -46,16 +43,16 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(value, compare_dict, "cleanup_non_cyclables not working")
 
     def test_closure(self):
-        clos = Closure(6, 16,2)
-        self.assertEqual(clos.len(),6, "incorrect length of closure")
-        self.assertEqual(clos[0],6)
-        self.assertEqual(clos[1],8)
+        clos = Closure(6, 16, 2)
+        self.assertEqual(clos.len(), 6, "incorrect length of closure")
+        self.assertEqual(clos[0], 6)
+        self.assertEqual(clos[1], 8)
         clos2 = Closure(None, 10, 2)
         self.assertEqual(clos2.len(), math.inf, "incorrect length for unbounded closure")
         with self.assertRaises(Exception):
-            a =clos[8]
+            a = clos[8]
         with self.assertRaises(Exception):
-            a =clos2[1]
+            a = clos2[1]
         self.assertTrue(8 in clos)
         self.assertTrue(15 not in clos)
         self.assertTrue(-60 in clos2)
@@ -63,7 +60,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_bellman_ford(self):
         self.g.bellman_ford_alg()
-        self.assertEqual(self.g.start_node.get_distance(),0)
+        self.assertEqual(self.g.start_node.get_distance(), 0)
 
         self.g.reset_distances()
         for node in self.g.nodes:
@@ -71,7 +68,7 @@ class MyTestCase(unittest.TestCase):
 
         self.g.bellman_ford_alg()
         cycles = self.g.get_cycles()
-        self.assertEqual(len(cycles), 3,"all 3 cycles are not found")
+        self.assertEqual(len(cycles), 3, "all 3 cycles are not found")
         for cycle in cycles:
             if cycle[1] == 6:
                 self.assertEqual(len(cycle[0]), 3, "short cycle not of correct length")
@@ -92,7 +89,7 @@ class MyTestCase(unittest.TestCase):
                 self.assertTrue(self.s13 in cycle[0], "s13 not in long cycle")
 
     def test_nodes(self):
-        node= self.s1
+        node = self.s1
         self.assertEqual(node.get_disequalities(), {60}, "get_disequalities incorrect")
 
         n = node.__copy__()
@@ -109,7 +106,6 @@ class MyTestCase(unittest.TestCase):
     def test_graph(self):
         graph = self.g
         gcopy = graph.__copy__()
-
 
         self.assertEqual(graph.start_node.get_id(), gcopy.start_node.get_id())
         if hasattr(graph, "cycles"):

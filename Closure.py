@@ -1,4 +1,6 @@
 import math
+
+
 class Closure:
     def __init__(self, minVal, maxVal, step):
         """
@@ -7,7 +9,7 @@ class Closure:
         :param maxVal: the maximal value in the closure (None to make it upward closed)
         :param step: the step to use in the closure
         """
-        if maxVal is not None and minVal is not None and maxVal< minVal:
+        if maxVal is not None and minVal is not None and maxVal < minVal:
             temp = maxVal
             maxVal = minVal
             minVal = temp
@@ -23,8 +25,9 @@ class Closure:
         O(1) as amount of steps is constant
         """
 
-        if (self.minVal is None or self.minVal < value ) and (self.maxVal is None or value < self.maxVal ):
-            if (self.minVal is None and value%self.step == self.maxVal %self.step) or (value % self.step == self.minVal % self.step) :
+        if (self.minVal is None or self.minVal < value) and (self.maxVal is None or value < self.maxVal):
+            if (self.minVal is None and value % self.step == self.maxVal % self.step) or (
+                    value % self.step == self.minVal % self.step):
                 return True
         return False
 
@@ -39,7 +42,7 @@ class Closure:
         if self.minVal is None or self.maxVal is None:
             return math.inf
 
-        return int((self.maxVal-self.minVal)/self.step +1)
+        return int((self.maxVal - self.minVal) / self.step + 1)
 
     def len(self):
         """
@@ -62,5 +65,4 @@ class Closure:
 
         if item >= len(self):
             raise Exception("value out of bounds")
-        return self.minVal+ self.step*item
-
+        return self.minVal + self.step * item
