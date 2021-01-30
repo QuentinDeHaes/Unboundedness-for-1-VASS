@@ -23,18 +23,40 @@ class Closure:
         O(1) as amount of steps is constant
         """
 
-        if (self.minVal < value or self.minVal is None) and (value < self.maxVal or self.maxVal is None):
+        if (self.minVal is None or self.minVal < value ) and (self.maxVal is None or value < self.maxVal ):
             if (self.minVal is None and value%self.step == self.maxVal %self.step) or (value % self.step == self.minVal % self.step) :
                 return True
         return False
 
     def __len__(self):
+        """
+        DEPRECATED because len won't allow floats (so no inf)
+        give the "amount of items" this would contain if it were represented as a list
+
+
+        :return: (int) length/ float inf if inf
+        """
         if self.minVal is None or self.maxVal is None:
             return math.inf
 
-        return (self.maxVal-self.minVal)/self.step +1
+        return int((self.maxVal-self.minVal)/self.step +1)
+
+    def len(self):
+        """
+                give the "amount of items" this would contain if it were represented as a list
+                :return: (int) length/ float inf if inf
+                """
+        if self.minVal is None or self.maxVal is None:
+            return math.inf
+
+        return int((self.maxVal - self.minVal) / self.step + 1)
 
     def __getitem__(self, item):
+        """
+        return the item on index item if the closure was represented as a list
+        :param item: the index we need to return
+        :return: the value on location item
+        """
         if self.minVal is None:
             raise Exception("no minimal value")
 
