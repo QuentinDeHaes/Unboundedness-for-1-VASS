@@ -43,10 +43,12 @@ class Graph:
         create a new copy of the current graph
         :return: copy (Graph)
         """
-        cop = Graph(self.start_node.copy())
-        cop.current_node = self.current_node.copy()
+        cop = Graph(self.start_node.__copy__())
+        cop.current_node = self.current_node.__copy__()
         cop.z_value = self.z_value
         cop.nodes = deepcopy(self.nodes)
+        if hasattr(self, "cycles"):
+            cop.cycles = deepcopy(self.cycles)
         return cop
 
     def to_dot(self, filename):

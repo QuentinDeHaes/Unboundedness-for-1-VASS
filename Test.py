@@ -91,5 +91,30 @@ class MyTestCase(unittest.TestCase):
                 self.assertTrue(self.s12 in cycle[0], "s12 not in long cycle")
                 self.assertTrue(self.s13 in cycle[0], "s13 not in long cycle")
 
+    def test_nodes(self):
+        node= self.s1
+        self.assertEqual(node.get_disequalities(), {60}, "get_disequalities incorrect")
+
+        n = node.__copy__()
+        self.assertEqual(node.get_disequalities(), n.get_disequalities(), "no correct copy")
+        self.assertEqual(node.get_id(), n.get_id(), "no correct copy")
+        self.assertEqual(node.get_distance(), n.get_distance(), "no correct copy")
+        self.assertEqual(node.get_edges(), n.get_edges(), "no correct copy")
+
+        self.assertIsNone(n.set_distance(50))
+        self.assertEqual(n.get_distance(), 50)
+        self.assertEqual(n.update_distance(24), 24)
+        self.assertEqual(n.get_distance(), 24)
+
+    def test_graph(self):
+        graph = self.g
+        gcopy = graph.__copy__()
+
+
+        self.assertEqual(graph.start_node.get_id(), gcopy.start_node.get_id())
+        if hasattr(graph, "cycles"):
+            self.assertEqual(graph.cycles, gcopy.cycles)
+
+
 if __name__ == '__main__':
     unittest.main()
