@@ -66,3 +66,19 @@ class Closure:
         if item >= len(self):
             raise Exception("value out of bounds")
         return self.minVal + self.step * item
+
+    def __eq__(self, other) ->bool:
+        if isinstance(other, Closure) and self.maxVal == other.maxVal and self.minVal == other.minVal and self.step == other.step:
+            return True
+        if isinstance(other, list) and len(other) == self.len():
+            minitem = self.minVal-1
+            val = True
+            for item in other:
+                if not item in self or not item > minitem:
+                    val = False
+                    break
+                minitem = item
+
+            return val
+
+        return False
