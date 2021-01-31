@@ -40,7 +40,7 @@ class Closure:
         :return: (int) length/ float inf if inf
         """
         if self.minVal is None or self.maxVal is None:
-            return math.inf
+            return 0
 
         return int((self.maxVal - self.minVal) / self.step + 1)
 

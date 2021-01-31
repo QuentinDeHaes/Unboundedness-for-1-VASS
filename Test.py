@@ -63,6 +63,8 @@ class MyTestCase(unittest.TestCase):
         closnew = Closure(6,16,2)
         self.assertTrue(clos == closnew)
         self.assertTrue(clos != [12,6,8])
+        closWrong = Closure(7,6,12)
+        self.assertEqual(closWrong.len(), 1)
 
     def test_bellman_ford(self):
         self.g.bellman_ford_alg()
