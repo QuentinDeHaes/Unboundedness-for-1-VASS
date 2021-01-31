@@ -47,6 +47,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(clos.len(), 6, "incorrect length of closure")
         self.assertEqual(clos[0], 6)
         self.assertEqual(clos[1], 8)
+        self.assertEqual(clos[clos.len() - 1], 16)
         clos2 = Closure(None, 10, 2)
         self.assertEqual(clos2.len(), math.inf, "incorrect length for unbounded closure")
         with self.assertRaises(Exception):
@@ -110,6 +111,48 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(graph.start_node.get_id(), gcopy.start_node.get_id())
         if hasattr(graph, "cycles"):
             self.assertEqual(graph.cycles, gcopy.cycles)
+
+    def test_non_allowed_values(self):
+        self.g.bellman_ford_alg()
+        cycles = self.g.get_cycles()
+        self.g.set_non_allowable_values(cycles)
+        for cycle in cycles:
+            if cycle[1] == 6:
+                for node in cycle[0]:
+                    if node.get_id() == 1:
+                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [54])
+                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 12)
+                    if node.get_id() == 2:
+                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [42])
+                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 0)
+
+            if cycle[1] == 9:
+                for node in cycle[0]:
+                    if node.get_id() == 4:
+                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [81, 93, 96])
+                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 52)
+                    if node.get_id() == 5:
+                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [32, 44, 29])
+                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 0)
+                    if node.get_id() == 6:
+                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [87, 81, 84])
+                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 43)
+
+            if cycle[1] == 10:
+                for node in cycle[0]:
+                    if node.get_id() == 10:
+                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [110, 123, 129, 126])
+                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 80)
+                    if node.get_id() == 11:
+                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [33, 49, 46, 30])
+                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 0)
+                    if node.get_id() == 12:
+                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [120, 127, 111, 114])
+                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 71)
+
+                    if node.get_id() == 13:
+                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [120, 114, 117, 123])
+                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 74)
 
 
 if __name__ == '__main__':
