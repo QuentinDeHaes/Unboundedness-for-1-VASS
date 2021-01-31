@@ -25,7 +25,7 @@ class Closure:
         O(1) as amount of steps is constant
         """
 
-        if (self.minVal is None or self.minVal < value) and (self.maxVal is None or value < self.maxVal):
+        if (self.minVal is None or self.minVal <= value) and (self.maxVal is None or value <= self.maxVal):
             if (self.minVal is None and value % self.step == self.maxVal % self.step) or (
                     value % self.step == self.minVal % self.step):
                 return True
@@ -82,3 +82,6 @@ class Closure:
             return val
 
         return False
+
+    def __ne__(self, other):
+        return not self == other
