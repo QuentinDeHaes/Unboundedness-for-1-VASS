@@ -369,5 +369,16 @@ class Graph:
         L = Q * pow(poly1, 2) + Q * Q + 3
         return L
 
+    def _getAllReachable1Step(self, original_nodes):
+        reachable = set()
+        for node in original_nodes:
+            lis= node[0].get_edges()
+            for new_node in lis:
+                if node[1]+new_node[1] not in new_node[0].get_disequalities():
+                    reachable.add((new_node[0], node[1]+new_node[1]))
+
+
+        return reachable
+
     def getBoundedCoverWithObstacles(self, cycles):
         return

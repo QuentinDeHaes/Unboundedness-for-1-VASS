@@ -162,5 +162,14 @@ class MyTestCase(unittest.TestCase):
                         self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 74)
 
 
+    def test_reachable(self):
+        totalval = self.g._getAllReachable1Step({(self.s0,0)})
+        self.assertSetEqual(totalval, {(self.s1, 12)})
+        new = self.g._getAllReachable1Step(totalval)
+        self.assertSetEqual(new, {(self.s2, 0),(self.s3, 24)})
+        new3 = self.g._getAllReachable1Step({(self.s4,93)})
+        self.assertSetEqual(new3, {(self.s7, 97)})
+
+
 if __name__ == '__main__':
     unittest.main()
