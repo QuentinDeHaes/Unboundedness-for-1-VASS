@@ -293,7 +293,7 @@ class Graph:
         O(V⁴)
 
         """
-        self.U0 = set()
+        self.U0 = list()
         # O(V²) to run over all cycles
         for cycle in complete_cycles:
             # O(V) to run over an entire cycle
@@ -303,20 +303,18 @@ class Graph:
                 minimal_cyclable = cycle[0][node_i].minimal_cyclable[self.cycles[cycle]]
                 positive_cycle_value = cycle[1]
                 # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
-                non_cyclables = cleanup_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
+                non_cyclables = chain_max_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
                 # O(V) as each node can have as many non_cyclables as disequalities in the cycle (which is bounded by nodes)
                 for non_cyc in non_cyclables:
-                    self.U0.add((cycle[0][node_i],
-                                 Closure(non_cyclables[non_cyc] + positive_cycle_value, None, positive_cycle_value)))
+                    self.U0.append((cycle[0][node_i],
+                                    Closure(non_cyclables[non_cyc] + positive_cycle_value, None, positive_cycle_value)))
 
     def get_bounded_chains(self, complete_cycles):
         """
         in order to continue our algorithm, we need the bounded chains, so we'll calculate them
         O(V⁴)
         """
-        # TODO remove the singularization of closures in the same thingie, make it 2 different closures
-        #  from A to B and from B to C instead of A to C
-        bounded_chains = dict(set())
+        bounded_chains = dict(list())
         # O(V²) to run over all cycles
         for cycle in complete_cycles:
             # O(V) to run over an entire cycle
@@ -331,13 +329,14 @@ class Graph:
                 # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
                 for key in non_cyclables:
                     value = int(minimal_cyclable / positive_cycle_value) * positive_cycle_value + key
-                    if node_i not in bounded_chains:
-                        bounded_chains[node_i] = set()  # create the bounded chains of the node if they do not yet exist
+                    if cycle[0][node_i] not in bounded_chains:
+                        bounded_chains[
+                            cycle[0][node_i]] = list()  # create the bounded chains of the node if they do not yet exist
                     non_cyclables[key].insert(0, value)
 
                     for i in range(len(non_cyclables[key]) - 1):  # create all closure used for the chain
 
-                        bounded_chains[node_i].add(
+                        bounded_chains[cycle[0][node_i]].append(
                             Closure(non_cyclables[key][i], non_cyclables[key][i + 1], positive_cycle_value))
 
         return bounded_chains
@@ -369,16 +368,79 @@ class Graph:
         L = Q * pow(poly1, 2) + Q * Q + 3
         return L
 
-    def _getAllReachable1Step(self, original_nodes):
+    def _getAllReachable1Step(self, original_nodes, complete_cycles):
+        """
+        return all node, value pairs reachable from any of the pairs in the original nodes in a single step
+        :param original_nodes: a set of node, value, complete_path pairs from which we check what they can reach in 1 step
+        :return: a set of node, value pairs that can be reached from any of original_nodes in a single step
+        """
         reachable = set()
         for node in original_nodes:
-            lis= node[0].get_edges()
+            lis = node[0].get_edges()
             for new_node in lis:
-                if node[1]+new_node[1] not in new_node[0].get_disequalities():
-                    reachable.add((new_node[0], node[1]+new_node[1]))
-
+                if node[1] + new_node[1] not in new_node[0].get_disequalities() and node[1] + new_node[1]>=0:
+                    tup = (new_node[0], node[1] + new_node[1], node[2]+(node[0],))
+                    if check_primitive(tup, complete_cycles):
+                        reachable.add(tup)
 
         return reachable
 
-    def getBoundedCoverWithObstacles(self, cycles):
-        return
+
+    def coverable(self, value, chains, complete_cycles):
+        """
+        check if a node, value pair can reach the current unbounded set in polynomial time and return true if so
+        :param complete_cycles: the frequently used list of all cycles in the graph
+        :param value: a node, value pair needed to check if it can reach current unbounded
+        :param chains: the list of all currently bounded chains in the cycle
+        :return: BOOL can it reach unbounded, yes or no
+        """
+        nodes_in_cycle = get_all_nodes_from_cycles(complete_cycles)
+        reachable_in_k = {value+(tuple(),)}
+        for i in range(self.BoundedCoverWithObstacles_GetL()):
+            reachable_in_k = self._getAllReachable1Step(reachable_in_k, complete_cycles)
+            for val in reachable_in_k:
+                if val[0] in nodes_in_cycle and not val[1]< min(val[0].minimal_cyclable.values()) : # it has a path to a cycle and it's value allows taking of a cycle (by it's minimal)
+                    if val[0] in chains:
+                        not_in_closure = True
+                        print("check closures")
+                        for closure in chains[val[0]]:
+                            if val[1] in closure:
+                                not_in_closure = False
+                                reachable_in_k.remove(val) #since the value is part of another closure,
+                                # it will be put in unbounded in another run if this value itself gets put in unbounded
+                                print("in closure")
+                                break
+
+                        if not_in_closure:
+                            print("true")
+                            return True
+                    else:
+                        print("true")
+                        return True
+            # reachable_in_k = self._prune(reachable_in_k)
+        print("false")
+        return False
+
+    def getBoundedCoverWithObstacles(self, cycles, chains):
+        top = self.top()
+        change = True
+        while change:
+            print("new Ui")
+            change = False
+            for node in chains:
+                for chain in chains[node]:
+                    for i in range(min(top, chain.len())):
+                        can_reach = self.coverable((node, chain[chain.len() - i-1]), chains, cycles)
+                        if can_reach:
+                            print("reachable")
+                            change = True
+                            if i == 0:
+                                #remove the chain completely as all values in it are now unbounded
+                                chains[node].remove(chain)
+                                if len(chains[node]) == 0:
+                                    del chains[node]
+                            else:
+                                chain.minVal = chain[chain.len() - (i-1) -1]
+                            break
+
+        return chains

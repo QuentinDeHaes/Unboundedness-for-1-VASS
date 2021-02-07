@@ -101,16 +101,73 @@ def cleanup_non_cyclables(non_cyclables, cyclabe_increase: int, minimal_cyclable
         if non_cyclable < minimal_cyclable:
             continue
 
-        value = (non_cyclable % cyclabe_increase) #check which chain we need to consider
+        value = (non_cyclable % cyclabe_increase)  # check which chain we need to consider
 
-        if value in cleaned_non_cyclables: #check wether th chain already has values or not
+        if value in cleaned_non_cyclables:  # check wether th chain already has values or not
 
-            cleaned_non_cyclables[value] .append(non_cyclable)
+            cleaned_non_cyclables[value].append(non_cyclable)
 
         else:
             cleaned_non_cyclables[value] = [non_cyclable]
 
-        for key in cleaned_non_cyclables: #in the end, we need all values in a sorted order, so we'll simply sort at the end
-            cleaned_non_cyclables[key]= sorted(cleaned_non_cyclables[key])
+        for key in cleaned_non_cyclables:  # in the end, we need all values in a sorted order, so we'll simply sort at the end
+            cleaned_non_cyclables[key] = sorted(cleaned_non_cyclables[key])
 
     return cleaned_non_cyclables
+
+
+def get_all_nodes_from_cycles(complete_cycles):
+    """
+    return all nodes in any of the complete cycles as a set
+    :param complete_cycles: the frequently used list of all cycles in the graph
+    :return: a set of all nodes present in 1 or more cycles
+    """
+    all_node = set()
+    for cycle in complete_cycles:
+        for node in cycle:
+            all_node.add(node)
+
+    return all_node
+
+def turn_cycle(cycle, front_node):
+    """
+    turn the list of the cycle to ensure frontnode is the first
+    :param cycle: the cycle to be turned
+    :param front_node: the node that needs to be at the front(and the back)
+    :return: the turned cycle
+    takes at most cyclelength -1 runs, so is bounded by O(V)
+    """
+    while cycle[0] != front_node:
+        del cycle[0]
+        cycle.append(cycle[0])
+    return cycle
+
+def check_primitive(value, complete_cycles):
+    """
+    return wether a path has no positive cycles in it
+    :param value: the value with a path to be checked
+    :param complete_cycles: complete list of all positive cycles in the graph
+    :return: BOOL is the path primitive
+    for each cycle, check whether it is in the path, you need to run over the path, but pathlength is bounded by L
+    so we have O(L*V³)
+    """
+    for cycle in complete_cycles:
+        newlis= value[2]+(value[0],)
+        node_i = 0
+        while node_i < len(newlis):
+            if newlis[node_i] in cycle:
+                new_cycle = turn_cycle(cycle, newlis[node_i])
+                is_cycle = True
+                for j in range(1, len(new_cycle)):
+                    if newlis[node_i+j] != new_cycle[j]:
+                        is_cycle = False
+                        node_i = node_i+j-1
+                        break
+                if is_cycle:
+                    return False
+
+            node_i+=1
+    return True
+
+
+
