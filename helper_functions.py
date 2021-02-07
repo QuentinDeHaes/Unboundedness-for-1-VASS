@@ -124,10 +124,11 @@ def get_all_nodes_from_cycles(complete_cycles):
     """
     all_node = set()
     for cycle in complete_cycles:
-        for node in cycle:
+        for node in cycle[0]:
             all_node.add(node)
 
     return all_node
+
 
 def turn_cycle(cycle, front_node):
     """
@@ -138,9 +139,10 @@ def turn_cycle(cycle, front_node):
     takes at most cyclelength -1 runs, so is bounded by O(V)
     """
     while cycle[0] != front_node:
-        del cycle[0]
-        cycle.append(cycle[0])
+        cycle = cycle[1:]
+        cycle += (cycle[0],)
     return cycle
+
 
 def check_primitive(value, complete_cycles):
     """
@@ -152,22 +154,19 @@ def check_primitive(value, complete_cycles):
     so we have O(L*V³)
     """
     for cycle in complete_cycles:
-        newlis= value[2]+(value[0],)
+        newlis = value[2] + (value[0],)
         node_i = 0
-        while node_i < len(newlis):
-            if newlis[node_i] in cycle:
-                new_cycle = turn_cycle(cycle, newlis[node_i])
+        while node_i < len(newlis) - (len(cycle[0])):
+            if newlis[node_i] in cycle[0]:
+                new_cycle = turn_cycle(cycle[0], newlis[node_i])
                 is_cycle = True
                 for j in range(1, len(new_cycle)):
-                    if newlis[node_i+j] != new_cycle[j]:
+                    if newlis[node_i + j] != new_cycle[j]:
                         is_cycle = False
-                        node_i = node_i+j-1
+                        node_i = node_i + j - 1
                         break
                 if is_cycle:
                     return False
 
-            node_i+=1
+            node_i += 1
     return True
-
-
-

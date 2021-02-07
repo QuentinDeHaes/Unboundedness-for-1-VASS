@@ -378,13 +378,12 @@ class Graph:
         for node in original_nodes:
             lis = node[0].get_edges()
             for new_node in lis:
-                if node[1] + new_node[1] not in new_node[0].get_disequalities() and node[1] + new_node[1]>=0:
-                    tup = (new_node[0], node[1] + new_node[1], node[2]+(node[0],))
+                if node[1] + new_node[1] not in new_node[0].get_disequalities() and node[1] + new_node[1] >= 0:
+                    tup = (new_node[0], node[1] + new_node[1], node[2] + (node[0],))
                     if check_primitive(tup, complete_cycles):
                         reachable.add(tup)
 
         return reachable
-
 
     def coverable(self, value, chains, complete_cycles):
         """
@@ -395,52 +394,62 @@ class Graph:
         :return: BOOL can it reach unbounded, yes or no
         """
         nodes_in_cycle = get_all_nodes_from_cycles(complete_cycles)
-        reachable_in_k = {value+(tuple(),)}
+        reachable_in_k = {value + (tuple(),)}
         for i in range(self.BoundedCoverWithObstacles_GetL()):
             reachable_in_k = self._getAllReachable1Step(reachable_in_k, complete_cycles)
+            if len(
+                    reachable_in_k) == 0:  # greatly increase efficiency as usually relatively quickly empty in small grpahs
+                return False
+
+            values_to_prune = set()
             for val in reachable_in_k:
-                if val[0] in nodes_in_cycle and not val[1]< min(val[0].minimal_cyclable.values()) : # it has a path to a cycle and it's value allows taking of a cycle (by it's minimal)
+                if val[0] in nodes_in_cycle and not val[1] < min(val[
+                                                                     0].minimal_cyclable.values()):  # it has a path to a cycle and it's value allows taking of a cycle (by it's minimal)
                     if val[0] in chains:
                         not_in_closure = True
-                        print("check closures")
                         for closure in chains[val[0]]:
                             if val[1] in closure:
                                 not_in_closure = False
-                                reachable_in_k.remove(val) #since the value is part of another closure,
+                                values_to_prune.add(val)  # since the value is part of another closure,
                                 # it will be put in unbounded in another run if this value itself gets put in unbounded
-                                print("in closure")
                                 break
 
                         if not_in_closure:
-                            print("true")
                             return True
                     else:
-                        print("true")
                         return True
-            # reachable_in_k = self._prune(reachable_in_k)
-        print("false")
+            reachable_in_k = self._prune(reachable_in_k, values_to_prune)
+
         return False
+
+    def _prune(self, reachable_in_k, values_to_prune):
+        for val in values_to_prune:
+            reachable_in_k.remove(val)
+
+        return reachable_in_k
 
     def getBoundedCoverWithObstacles(self, cycles, chains):
         top = self.top()
         change = True
         while change:
-            print("new Ui")
             change = False
+            to_delete = set()
             for node in chains:
                 for chain in chains[node]:
                     for i in range(min(top, chain.len())):
-                        can_reach = self.coverable((node, chain[chain.len() - i-1]), chains, cycles)
+                        can_reach = self.coverable((node, chain[chain.len() - i - 1]), chains, cycles)
                         if can_reach:
-                            print("reachable")
+
                             change = True
                             if i == 0:
-                                #remove the chain completely as all values in it are now unbounded
+                                # remove the chain completely as all values in it are now unbounded
                                 chains[node].remove(chain)
                                 if len(chains[node]) == 0:
-                                    del chains[node]
+                                    to_delete.add(node)
                             else:
-                                chain.minVal = chain[chain.len() - (i-1) -1]
+                                chain.minVal = chain[chain.len() - (i - 1) - 1]
                             break
+            for node in to_delete:
+                del chains[node]
 
         return chains
