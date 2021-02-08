@@ -59,11 +59,11 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(15 not in clos)
         self.assertTrue(-60 in clos2)
         self.assertTrue(12 not in clos2)
-        self.assertTrue(clos == [6,8,10,12,14,16])
-        closnew = Closure(6,16,2)
+        self.assertTrue(clos == [6, 8, 10, 12, 14, 16])
+        closnew = Closure(6, 16, 2)
         self.assertTrue(clos == closnew)
-        self.assertTrue(clos != [12,6,8])
-        closWrong = Closure(7,6,12)
+        self.assertTrue(clos != [12, 6, 8])
+        closWrong = Closure(7, 6, 12)
         self.assertEqual(closWrong.len(), 1)
 
     def test_bellman_ford(self):
@@ -161,16 +161,47 @@ class MyTestCase(unittest.TestCase):
                         self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [120, 114, 117, 123])
                         self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 74)
 
-
     def test_reachable(self):
         self.g.bellman_ford_alg()
         cycles = self.g.get_cycles()
-        totalval = self.g._getAllReachable1Step({(self.s0,0, tuple())},cycles )
+        totalval = self.g._getAllReachable1Step({(self.s0, 0, tuple())}, cycles)
         self.assertSetEqual(totalval, {(self.s1, 12, (self.s0,))})
         new = self.g._getAllReachable1Step(totalval, cycles)
-        self.assertSetEqual(new, {(self.s2, 0, (self.s0, self.s1)),(self.s3, 24, (self.s0, self.s1))})
-        new3 = self.g._getAllReachable1Step({(self.s4,93, tuple())}, cycles)
+        self.assertSetEqual(new, {(self.s2, 0, (self.s0, self.s1)), (self.s3, 24, (self.s0, self.s1))})
+        new3 = self.g._getAllReachable1Step({(self.s4, 93, tuple())}, cycles)
         self.assertSetEqual(new3, {(self.s7, 97, (self.s4,))})
+
+    def test_get_all_nodes_from_cycles(self):
+        self.g.bellman_ford_alg()
+        cycles = self.g.get_cycles()
+        val = get_all_nodes_from_cycles(cycles)
+        self.assertSetEqual(val, {self.s1, self.s2, self.s4, self.s5, self.s6, self.s10, self.s11, self.s12, self.s13})
+
+    def test_turn_cycle(self):
+        self.g.bellman_ford_alg()
+        cycles = self.g.get_cycles()
+        cycle = ()
+        for c in cycles:
+            if c[1] == 9:
+                cycle = c[0]
+
+        newcycle = turn_cycle(cycle, self.s5)
+        self.assertEqual(newcycle, (self.s5, self.s6, self.s4, self.s5))
+        newcycle2 = turn_cycle(cycle, self.s6)
+        self.assertEqual(newcycle2, (self.s6, self.s4, self.s5, self.s6))
+
+    def test_check_primitive(self):
+        self.g.bellman_ford_alg()
+        cycles = self.g.get_cycles()
+        value = (self.s4, 5, (self.s0, self.s1, self.s3))
+        ans = check_primitive(value, cycles)
+        self.assertTrue(ans)
+        value = (self.s1, 5, (self.s1, self.s2))
+        ans = check_primitive(value, cycles)
+        self.assertTrue(ans)
+        value = (self.s1, 5, (self.s0, self.s1, self.s2))
+        ans = check_primitive(value, cycles)
+        self.assertFalse(ans)
 
 
 if __name__ == '__main__':

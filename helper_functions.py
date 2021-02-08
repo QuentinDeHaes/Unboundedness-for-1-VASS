@@ -121,10 +121,11 @@ def get_all_nodes_from_cycles(complete_cycles):
     return all nodes in any of the complete cycles as a set
     :param complete_cycles: the frequently used list of all cycles in the graph
     :return: a set of all nodes present in 1 or more cycles
+    O(V³)
     """
     all_node = set()
-    for cycle in complete_cycles:
-        for node in cycle[0]:
+    for cycle in complete_cycles:  # check every cycle O(V²)
+        for node in cycle[0]:  # add every node to the set O(V)
             all_node.add(node)
 
     return all_node
@@ -138,7 +139,10 @@ def turn_cycle(cycle, front_node):
     :return: the turned cycle
     takes at most cyclelength -1 runs, so is bounded by O(V)
     """
-    while cycle[0] != front_node:
+    if front_node not in cycle:  # ensure it will not run forever because it lacks the required node
+        raise Exception("incorrect use of turn_cycle function, front_node not in given cycle")
+    while cycle[
+        0] != front_node:  # as long as the node at the front is not the desired frontnode, make the second node the node at the front and check again
         cycle = cycle[1:]
         cycle += (cycle[0],)
     return cycle
@@ -153,19 +157,25 @@ def check_primitive(value, complete_cycles):
     for each cycle, check whether it is in the path, you need to run over the path, but pathlength is bounded by L
     so we have O(L*V³)
     """
-    for cycle in complete_cycles:
-        newlis = value[2] + (value[0],)
+    for cycle in complete_cycles:  # for each cycle, check if it is in the path O(V²)
+        newlis = value[2] + (value[0],)  # check the complete path based on the historical path and the current node
         node_i = 0
-        while node_i < len(newlis) - (len(cycle[0])):
+        while node_i <= len(newlis) - (
+                len(cycle[0])):  # a forloop where we can skip j steps after an incorrect attempt O(L)
             if newlis[node_i] in cycle[0]:
-                new_cycle = turn_cycle(cycle[0], newlis[node_i])
+                new_cycle = turn_cycle(cycle[0], newlis[
+                    node_i])  # if a possible cycle is found, turn the data so we can simply run over it O(V)
                 is_cycle = True
-                for j in range(1, len(new_cycle)):
+                for j in range(1, len(new_cycle)):  # check whether all subsequent nodes also fit the cycle
                     if newlis[node_i + j] != new_cycle[j]:
                         is_cycle = False
-                        node_i = node_i + j - 1
+                        node_i = node_i + j - 1  # we need only recheck the final node (the one that caused failure)
+                        # in the list as others could not create that cycle since then no failure would have been flagged
+
                         break
-                if is_cycle:
+                if is_cycle and len(newlis) != len(cycle[
+                                                       0]):  # if a cycle is found and it is not the entire path (needs to be infix) return that it is not primitive
+
                     return False
 
             node_i += 1
