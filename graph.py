@@ -374,13 +374,16 @@ class Graph:
         :param original_nodes: a set of node, value, complete_path pairs from which we check what they can reach in 1 step
         :return: a set of node, value pairs that can be reached from any of original_nodes in a single step
         """
+        # TODO check whether original nodes polynomially bounded
         reachable = set()
-        for node in original_nodes:
+        for node in original_nodes:  # for each node in our set, we gather it's reachable states and add them to our result
             lis = node[0].get_edges()
-            for new_node in lis:
+            for new_node in lis:  # a newly reachable node is only reachable by another node, each node can only have V-1 O(V) outgoing edges
                 if node[1] + new_node[1] not in new_node[0].get_disequalities() and node[1] + new_node[1] >= 0:
+                    # check if this node does not infringe upon any disequalities or other rules
                     tup = (new_node[0], node[1] + new_node[1], node[2] + (node[0],))
-                    if check_primitive(tup, complete_cycles):
+                    if check_primitive(tup,
+                                       complete_cycles):  # check if the new node does not possess any cycles in it O(L*V³)
                         reachable.add(tup)
 
         return reachable
