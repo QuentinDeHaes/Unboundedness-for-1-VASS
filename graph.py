@@ -388,7 +388,7 @@ class Graph:
 
         return reachable
 
-    def coverable(self, value, chains, complete_cycles):
+    def coverable(self, value, chains, complete_cycles, cycle_weight = None):
         """
         check if a node, value pair can reach the current unbounded set in polynomial time and return true if so
         :param complete_cycles: the frequently used list of all cycles in the graph
@@ -400,8 +400,7 @@ class Graph:
         reachable_in_k = {value + (tuple(),)}
         for i in range(self.BoundedCoverWithObstacles_GetL()):
             reachable_in_k = self._getAllReachable1Step(reachable_in_k, complete_cycles)
-            if len(
-                    reachable_in_k) == 0:  # greatly increase efficiency as usually relatively quickly empty in small grpahs
+            if len(reachable_in_k) == 0:  # greatly increase efficiency as usually relatively quickly empty in small grpahs
                 return False
 
             values_to_prune = set()
@@ -421,17 +420,44 @@ class Graph:
                             return True
                     else:
                         return True
-            reachable_in_k = self._prune(reachable_in_k, values_to_prune)
+            reachable_in_k = self._prune(reachable_in_k, values_to_prune, cycle_weight)
 
         return False
 
-    def _prune(self, reachable_in_k, values_to_prune):
+    def _prune(self, reachable_in_k, values_to_prune, cycle_weight):
+        """
+        method used to prune after each step of the coverability algorithm
+        :param reachable_in_k: the values the coverability method generated with a single step
+        :param values_to_prune: a list of values in another bounded chain, no longer needed for this and also needs pruning
+        :return: the pruned version of the method
+        """
         for val in values_to_prune:
             reachable_in_k.remove(val)
 
+        if cycle_weight != None:
+            self._prune_congruence(reachable_in_k, cycle_weight)
+
+
+
         return reachable_in_k
 
+    def _prune_congruence(self, reachable_in_k, cycle_weight):
+        """
+        the first pruning step of the algorithm
+        :param reachable_in_k: the original set of reachable values to be pruned
+        :param cycle_weight: the W used in a≡b (mod W)
+        :return: the pruned reachable_in_k
+        """
+        new_reachable_in_k = reachable_in_k
+        return new_reachable_in_k
+
     def getBoundedCoverWithObstacles(self, cycles, chains):
+        """
+        the method used to acquire the non-trivial unbounded values
+        :param cycles: the list of all cycles
+        :param chains: the list of bounded chains
+        :return: the bounded chains after removing the non-trivial unbounded values, i.e the complement of U0
+        """
         top = self.top()
         change = True
         while change:
