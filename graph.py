@@ -476,7 +476,7 @@ class Graph:
 
         return reachable_in_k
 
-    def getBoundedCoverWithObstacles(self, cycles, chains):
+    def bndCoverWObstacles(self, cycles, chains):
         """
         the method used to acquire the non-trivial unbounded values
         :param cycles: the list of all cycles
