@@ -102,7 +102,7 @@ def getAllReachable1Step( original_nodes):
         for new_node in lis:  # a newly reachable node is only reachable by another node, each node can only have V-1 O(V) outgoing edges
             if node[1] + new_node[1] >= 0:
                 # check if this node does not infringe upon any disequalities or other rules
-                tup = (new_node[0], node[1] + new_node[1], node[2] + (node[0],))
+                tup = (new_node[0], node[1] + new_node[1])
                  # check if the new node does not possess any cycles in it O(L*V³)
                 reachable.add(tup)
 
@@ -110,7 +110,7 @@ def getAllReachable1Step( original_nodes):
 
 def Bounded_coverability_with_obstacles(g: Graph, source: Tuple[Node, int], target_state: Node, L: int, O: O_equationset) -> bool:
 
-    reachable = source
+    reachable = {source}
 
     for i in range(L): #the arlorithm runs for at least L rounds
         if len(reachable)==0:
