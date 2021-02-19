@@ -42,5 +42,26 @@ class MyTestCase(unittest.TestCase):
                                                                                     g2.BoundedCoverWithObstacles_GetL(),
                                                                                     O3))
 
+    def test_bwco4(self):
+        g2, nodes = generate_graph2()
+        O2 = Bounded_coverability_with_obstacles.O_equationset(52, 2, [0], [63, 75])
+        O3 = Bounded_coverability_with_obstacles.O_equationset(52, 2, [1], [63, 75])
+        O4 = Bounded_coverability_with_obstacles.O_equationset(52, 2, [0,1], [63, 75])
+        self.assertTrue(
+            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(g2, (nodes[0], 0),
+                                                                                    nodes[0],
+                                                                                    g2.BoundedCoverWithObstacles_GetL(),
+                                                                                    O2))
+        self.assertTrue(
+            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(g2, (nodes[0], 0),
+                                                                                    nodes[0],
+                                                                                    g2.BoundedCoverWithObstacles_GetL(),
+                                                                                    O3))
+        # self.assertFalse(
+        #     Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(g2, (nodes[0], 0),
+        #                                                                             nodes[0],
+        #                                                                             g2.BoundedCoverWithObstacles_GetL(),
+        #                                                                             O4))
+
 if __name__ == '__main__':
     unittest.main()

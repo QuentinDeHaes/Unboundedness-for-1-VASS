@@ -352,7 +352,7 @@ class Graph:
         Q = len(self.nodes)
         poly2Q = (Q * Q + 2) * (Q + 1) + 1
         P_Q = (2 * Q * Q) * (Q * Q + 2) * (Q + 1) + Q * (2 * Q + 1) * poly2Q
-        top = 2 * Q * Q * P_Q
+        top = (2 * Q * Q) * P_Q
         return top
 
     def BoundedCoverWithObstacles_GetL(self):
@@ -364,7 +364,7 @@ class Graph:
         Q = len(self.nodes)
 
         T = self.top()
-        poly1 = Q * Q + Q + 3 + Q * T
+        poly1 = (Q * Q) + Q + 3 + (Q * T)
         L = Q * pow(poly1, 2) + Q * Q + 3
         return L
 
