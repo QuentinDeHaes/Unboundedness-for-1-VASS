@@ -1,5 +1,3 @@
-from graph import Graph
-from Node import Node
 from typing import Tuple, List
 
 
@@ -31,16 +29,32 @@ class Un:
     the complete representation of Un required in the BoundedCoverWObstacles sub-routine
     """
 
-    def __init__(self, complement):
+    def __init__(self,g, cycles, complement):
         """Initialize U_0 by using it's complement, the complement is given as a set of closures"""
         self.O_i = set()
+
+        for cycle in cycles:
+            W = cycle[1]
+            for node in cycle[0][:-1]:
+                l = node.minimal_cyclable[g.cycles[cycle]]
+                a_i = []
+                for closure in complement[node]:
+                    if closure.step == W:
+                        #TODo check whether the closure is actually from the cycle using l and minvalue sort off
+                        a_i.append(closure.minVal % W)
+                O_i = O_equationset(l,W,a_i, [])
+                self.O_i.add((node,O_i))
+
 
     def add_residue_class(self, O: O_equationset):
         self.O_i.add(O)
 
-    def __contains__(self, item):
+    def __contains__(self, item: Tuple):
+
         for o in self.O_i:
-            if item in o:
+            if item[0] != o[0]:
+                return False
+            if item[1] in o[1]:
                 return True
 
         return False

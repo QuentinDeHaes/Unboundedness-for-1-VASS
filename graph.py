@@ -2,6 +2,7 @@ from Node import *
 from helper_functions import *
 from Closure import *
 from copy import copy, deepcopy
+from Un_representation import Un, O_equationset
 
 
 class Graph:
@@ -486,6 +487,7 @@ class Graph:
         :param chains: the list of bounded chains
         :return: the bounded chains after removing the non-trivial unbounded values, i.e the complement of U0
         """
+        U_n = Un(self, cycles, chains)
         top = self.top()
         change = True
         n = 0
