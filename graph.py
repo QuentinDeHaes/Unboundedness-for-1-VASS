@@ -374,7 +374,6 @@ class Graph:
         :param original_nodes: a set of node, value, complete_path pairs from which we check what they can reach in 1 step
         :return: a set of node, value pairs that can be reached from any of original_nodes in a single step
         """
-        # TODO check whether original nodes polynomially bounded
         reachable = set()
         for node in original_nodes:  # for each node in our set, we gather it's reachable states and add them to our result
             lis = node[0].get_edges()
