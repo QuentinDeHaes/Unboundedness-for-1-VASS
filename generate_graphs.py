@@ -6,7 +6,7 @@ from typing import Tuple, List
 def generate_graph1() -> Tuple[Graph, List[Node]]:
     """
     generate a graph with a single node returning to itself with value 2
-    :return: Graph
+    :return: Graph, nodes
     """
     s0 = Node(0)
     s0.add_edge(s0, 2)
@@ -16,6 +16,10 @@ def generate_graph1() -> Tuple[Graph, List[Node]]:
 
 
 def generate_graph2() -> Tuple[Graph, List[Node]]:
+    """
+    return a graph of 4 nodes that could acquire every value everywhere
+    :return: Graph, Nodes
+    """
     s0 = Node(0)
     s1 = Node(1)
     s2 = Node(2)

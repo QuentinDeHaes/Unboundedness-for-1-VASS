@@ -85,8 +85,16 @@ def _prune_congruence( reachable_in_k, L,  n, W ):
     return reachable_in_k
 
 def _prune_maximum(reachable_in_k, L, m, n):
+    """
+    the second pruning step where we get only the highest (n+L)*(m+1) values
+    :param reachable_in_k:
+    :param L:
+    :param m:
+    :param n:
+    :return:
+    """
     for key in reachable_in_k:
-        reachable_in_k[key] = reachable_in_k[key][: min(len(reachable_in_k[key]), (n+L)*(m+1))]
+        reachable_in_k[key] = sorted(reachable_in_k[key], reverse=True)[: min(len(reachable_in_k[key]), (n+L)*(m+1))]
 
     return reachable_in_k
 
@@ -109,10 +117,19 @@ def getAllReachable1Step( original_nodes):
     return reachable
 
 def Bounded_coverability_with_obstacles(g: Graph, source: Tuple[Node, int], target_state: Node, L: int, O: O_equationset) -> bool:
+    """
+    the method to see whether the node :source: can reach configuration (targetstate, o ) o∈ O
+    :param g: the graph we are checking in
+    :param source:the source configuration
+    :param target_state:the target state
+    :param L:a value generated based on the amount of nodes in the graph
+    :param O: a special set of infinite values
+    :return:Bool can source reach a conf (t, o)
+    """
 
     reachable = {source}
 
-    for i in range(L): #the arlorithm runs for at least L rounds
+    for i in range(L): #the arlorithm runs for at most L rounds
         if len(reachable)==0:
             return False
         unpruned_reachable = getAllReachable1Step(reachable)
