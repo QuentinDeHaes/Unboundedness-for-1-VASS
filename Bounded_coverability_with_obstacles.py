@@ -1,27 +1,8 @@
 from graph import Graph
 from Node import Node
 from typing import Tuple, List
+from Un_representation import O_equationset
 
-class O_equationset:
-    """
-    the equationset as given by equation (4) defined by different non-negative integers
-    """
-    def __init__(self, l: int , W: int, a_i: List[int], b_i: List[int]):
-        self.l = l
-        self.W=W
-        self.a_i= a_i
-        self.b_i = b_i
-
-    def __contains__(self, item):
-        if item < self.l :
-            return False
-        for a in self.a_i:
-            if (item - a)% self.W == 0:
-                return False
-        for b in self.b_i:
-            if item == b:
-                return False
-        return True
 
 
 def prune( reachable_in_k, L, m, n, W ):

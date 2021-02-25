@@ -349,6 +349,8 @@ class Graph:
         :return: top(Q)
         this is constant efficiëncy O(1)
         """
+        #TODO improve 200
+        return
         Q = len(self.nodes)
         poly2Q = (Q * Q + 2) * (Q + 1) + 1
         P_Q = (2 * Q * Q) * (Q * Q + 2) * (Q + 1) + Q * (2 * Q + 1) * poly2Q
@@ -361,6 +363,8 @@ class Graph:
         Coverability in Succinct One-Counter Nets with Disequality Tests provided to me by professor perez
         :return: L
         """
+        #TODO improve 1000
+        return 1000
         Q = len(self.nodes)
 
         T = self.top()

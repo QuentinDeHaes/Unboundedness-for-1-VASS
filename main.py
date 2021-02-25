@@ -2,9 +2,7 @@ from Node import *
 from graph import *
 from generate_example import *
 
-if __name__ == "__main__":
-    g = generate_example()
-    g.to_dot("dot.dot")
+def Coverability_in_1Vass_w_Disequality_guards(g, source):
     g.bellman_ford_alg()
     cycles = g.get_cycles()
     g.set_non_allowable_values(cycles)
@@ -12,5 +10,11 @@ if __name__ == "__main__":
     g.to_dot("dot.dot")
     chains = g.get_bounded_chains(cycles)
     new_chains, n = g.bndCoverWObstacles(cycles, chains)
-    is_reachable = g.coverable((g.start_node, 0), new_chains, cycles, n)
+    is_reachable = g.coverable(source, new_chains, cycles, n)
+    return is_reachable
+
+if __name__ == "__main__":
+    g = generate_example()
+    g.to_dot("dot.dot")
+    Coverability_in_1Vass_w_Disequality_guards(g, (g.start_node, 0))
     print(is_reachable)
