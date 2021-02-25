@@ -16,5 +16,5 @@ def Coverability_in_1Vass_w_Disequality_guards(g, source):
 if __name__ == "__main__":
     g = generate_example()
     g.to_dot("dot.dot")
-    Coverability_in_1Vass_w_Disequality_guards(g, (g.start_node, 0))
+    is_reachable=Coverability_in_1Vass_w_Disequality_guards(g, (g.start_node, 0))
     print(is_reachable)
