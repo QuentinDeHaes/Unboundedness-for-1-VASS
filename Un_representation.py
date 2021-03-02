@@ -32,18 +32,28 @@ class Un:
     def __init__(self,g, cycles, complement):
         """Initialize U_0 by using it's complement, the complement is given as a set of closures"""
         self.O_i = set()
+        self.O_i2 = dict()
 
         for cycle in cycles:
             W = cycle[1]
             for node in cycle[0][:-1]:
                 l = node.minimal_cyclable[g.cycles[cycle]]
                 a_i = []
+                other_O_is = dict((int, int))
                 for closure in complement[node]:
                     if closure.step == W:
                         #TODo check whether the closure is actually from the cycle using l and minvalue sort off
                         a_i.append(closure.minVal % W)
+                        other_O_is[closure.minVal % W] = max(closure.maxVal + W, other_O_is[closure.minVal % W])
+
                 O_i = O_equationset(l,W,a_i, [])
                 self.O_i.add((node,O_i))
+                for closure in other_O_is:
+                    bc = list(a_i)
+                    bc.remove(closure)
+                    O_i = O_equationset(other_O_is[closure], W , bc, [])
+                    self.O_i2[node][cycle][closure] = O_i
+
 
 
     def add_residue_class(self, O: O_equationset):
@@ -53,8 +63,15 @@ class Un:
 
         for o in self.O_i:
             if item[0] != o[0]:
-                return False
+                continue
             if item[1] in o[1]:
                 return True
+        if item[0] not in self.O_i2:
+            return False
+        for attempt in self.O_i2[item[0]]:
+            if item[1]% attempt[1] in self.O_i2[item[0]][attempt]:
+                if item[1] in self.O_i2[item[0]][attempt][item[1]% attempt[1]]:
+                    return True
+
 
         return False
