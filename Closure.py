@@ -85,3 +85,28 @@ class Closure:
 
     def __ne__(self, other):
         return not self == other
+
+    def find_index(self, value):
+        """
+        find the index where the value resides
+        :param value: the value for which we are looking for the index
+        :return:
+        """
+        if value not in self:
+            raise Exception("value not part of closure, so no index found")
+        if self.minVal is None:
+            raise Exception("lower unbounded closure has no indices")
+        return (value-self.minVal)//self.step
+
+    def get_index_list(self, start, end):
+        """
+        get a list values from index start to index end
+        :param start:
+        :param end:
+        :return:
+        """
+        lis = []
+        for i in range(start, end):
+            lis.append(self[i])
+
+        return lis

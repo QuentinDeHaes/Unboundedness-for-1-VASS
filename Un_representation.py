@@ -37,14 +37,18 @@ class Un:
         for cycle in cycles:
             W = cycle[1]
             for node in cycle[0][:-1]:
+                if node not in self.O_i2:
+                    self.O_i2[node] = dict()
+                if cycle not in self.O_i2[node]:
+                    self.O_i2[node][cycle]= dict()
                 l = node.minimal_cyclable[g.cycles[cycle]]
                 a_i = []
-                other_O_is = dict((int, int))
+                other_O_is = dict()
                 for closure in complement[node]:
                     if closure.step == W:
                         #TODo check whether the closure is actually from the cycle using l and minvalue sort off
                         a_i.append(closure.minVal % W)
-                        other_O_is[closure.minVal % W] = max(closure.maxVal + W, other_O_is[closure.minVal % W])
+                        other_O_is[closure.minVal % W] = max(closure.maxVal + W, 0 if other_O_is.get(closure.minVal % W) is None else other_O_is[closure.minVal % W])
 
                 O_i = O_equationset(l,W,a_i, [])
                 self.O_i.add((node,O_i))
@@ -56,10 +60,10 @@ class Un:
 
 
 
-    def add_residue_class(self, O: O_equationset):
+    def add_residue_class(self, O: O_equationset) ->None:
         self.O_i.add(O)
 
-    def __contains__(self, item: Tuple):
+    def __contains__(self, item: Tuple) -> bool:
 
         for o in self.O_i:
             if item[0] != o[0]:
@@ -75,3 +79,22 @@ class Un:
 
 
         return False
+
+
+
+    def list_O_i(self) ->list:
+        return_val = list(self.O_i)
+
+        for node in self.O_i2:
+            for cycle in self.O_i2[node]:
+                for a_i in self.O_i2[node][cycle]:
+                    return_val.append((node,self.O_i2[node][cycle][a_i]))
+
+        return return_val
+
+    def edit_non_triv_q_residueclass(self, node, W, allowed_a_i, new_minval, new_bi):
+        for cycle in self.O_i2[node]:
+            if cycle[1] == W:
+                if allowed_a_i in self.O_i2[node][cycle]:
+                    new_oi = O_equationset(min(new_minval, self.O_i2[node][cycle][allowed_a_i].l), W , self.O_i2[node][cycle][allowed_a_i].a_i, new_bi)
+                    self.O_i2[node][cycle][allowed_a_i] = new_oi

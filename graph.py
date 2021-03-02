@@ -4,6 +4,7 @@ from Closure import *
 from copy import copy, deepcopy
 from Un_representation import Un, O_equationset
 
+import Bounded_coverability_with_obstacles
 
 class Graph:
     def __init__(self, start_node: Node):
@@ -351,7 +352,7 @@ class Graph:
         this is constant efficiëncy O(1)
         """
         #TODO improve 200
-        return
+        return 200
         Q = len(self.nodes)
         poly2Q = (Q * Q + 2) * (Q + 1) + 1
         P_Q = (2 * Q * Q) * (Q * Q + 2) * (Q + 1) + Q * (2 * Q + 1) * poly2Q
@@ -375,6 +376,7 @@ class Graph:
 
     def _getAllReachable1Step(self, original_nodes, complete_cycles):
         """
+        DEPRECATED
         return all node, value pairs reachable from any of the pairs in the original nodes in a single step
         :param original_nodes: a set of node, value, complete_path pairs from which we check what they can reach in 1 step
         :return: a set of node, value pairs that can be reached from any of original_nodes in a single step
@@ -394,6 +396,7 @@ class Graph:
 
     def coverable(self, value, chains, complete_cycles, n):
         """
+        DEPRECATED
         check if a node, value pair can reach the current unbounded set in polynomial time and return true if so
         :param complete_cycles: the frequently used list of all cycles in the graph
         :param value: a node, value pair needed to check if it can reach current unbounded
@@ -429,6 +432,7 @@ class Graph:
 
     def _prune(self, reachable_in_k,  cycles, chains,  L, m, n ):
         """
+        DEPRECATED
         method used to prune after each step of the coverability algorithm
         :param reachable_in_k: the values the coverability method generated with a single step
         :param values_to_prune: a list of values in another bounded chain, no longer needed for this and also needs pruning
@@ -461,6 +465,7 @@ class Graph:
 
     def _prune_congruence(self, reachable_in_k, cycles, chains, L,  n ):
         """
+        DEPRECATED
         the first pruning step of the algorithm
         :param reachable_in_k: the original set of reachable values to be pruned
         :param cycles: all cycles of the graph
@@ -475,6 +480,16 @@ class Graph:
         return new_reachable_in_k
 
     def _prune_maximum(self, reachable_in_k, cycles, chains, L, m, n):
+        """
+        DEPRECATED
+        :param reachable_in_k:
+        :param cycles:
+        :param chains:
+        :param L:
+        :param m:
+        :param n:
+        :return:
+        """
         for key in reachable_in_k:
             reachable_in_k[key] = reachable_in_k[key][: min(len(reachable_in_k[key]), (n+L)*(m+1))]
 
@@ -491,23 +506,33 @@ class Graph:
         top = self.top()
         change = True
         n = 0
+        L = self.BoundedCoverWithObstacles_GetL()
         while change:
             change = False
             to_delete = set()
             for node in chains:
-                for chain in chains[node]:
-                    for i in range(min(top, chain.len())):
-                        can_reach = self.coverable((node, chain[chain.len() - i - 1]), chains, cycles, n)
-                        if can_reach:
 
-                            change = True
-                            if i == 0:
-                                # remove the chain completely as all values in it are now unbounded
-                                chains[node].remove(chain)
-                                if len(chains[node]) == 0:
-                                    to_delete.add(node)
-                            else:
-                                chain.minVal = chain[chain.len() - (i - 1) - 1]
+                for chain in chains[node]:
+                    #TODO ensure 2 chains of same residue do not fuck with eachother
+                    for i in range(min(top, chain.len())):
+                        can_reach =  False
+                        for o_i in U_n.list_O_i():
+                            value = chain[chain.len() - i - 1]
+                            can_reach = Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles((node, value),o_i[0],L,o_i[1])
+                            if can_reach:
+
+                                U_n.edit_non_triv_q_residueclass(node, chain.step, chain.minVal%chain.step, chain.minVal, chain.get_index_list(chain.find_index(value),int(chain.len())))
+
+                                change = True
+                                if i == 0:
+                                    # remove the chain completely as all values in it are now unbounded
+                                    chains[node].remove(chain)
+                                    if len(chains[node]) == 0:
+                                        to_delete.add(node)
+                                else:
+                                    chain.minVal = chain[chain.len() - (i - 1) - 1]
+                                break
+                        if can_reach:
                             break
             for node in to_delete:
                 del chains[node]
