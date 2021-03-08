@@ -6,6 +6,7 @@ from Un_representation import Un, O_equationset
 
 import Bounded_coverability_with_obstacles
 
+
 class Graph:
     def __init__(self, start_node: Node):
         """
@@ -351,7 +352,7 @@ class Graph:
         :return: top(Q)
         this is constant efficiëncy O(1)
         """
-        #TODO improve 200
+        # TODO improve 200
         return 200
         Q = len(self.nodes)
         poly2Q = (Q * Q + 2) * (Q + 1) + 1
@@ -365,7 +366,7 @@ class Graph:
         Coverability in Succinct One-Counter Nets with Disequality Tests provided to me by professor perez
         :return: L
         """
-        #TODO improve 1000
+        # TODO improve 1000
         return 1000
         Q = len(self.nodes)
 
@@ -409,7 +410,8 @@ class Graph:
         m = len(chains)
         for i in range(L):
             reachable_in_k = self._getAllReachable1Step(reachable_in_k, complete_cycles)
-            if len(reachable_in_k) == 0:  # greatly increase efficiency as usually relatively quickly empty in small grpahs
+            if len(
+                    reachable_in_k) == 0:  # greatly increase efficiency as usually relatively quickly empty in small grpahs
                 return False
 
             for val in reachable_in_k:
@@ -426,11 +428,11 @@ class Graph:
                             return True
                     else:
                         return True
-            reachable_in_k = self._prune(reachable_in_k, complete_cycles, chains,  L, m, n )
+            reachable_in_k = self._prune(reachable_in_k, complete_cycles, chains, L, m, n)
 
         return False
 
-    def _prune(self, reachable_in_k,  cycles, chains,  L, m, n ):
+    def _prune(self, reachable_in_k, cycles, chains, L, m, n):
         """
         DEPRECATED
         method used to prune after each step of the coverability algorithm
@@ -439,31 +441,28 @@ class Graph:
         :return: the pruned version of the method
         """
 
-        reachable_dict= dict()
+        reachable_dict = dict()
         # turn the set of reachable values in a dict per state to make it easier to prune (as pruning is done as max per state)
         for value in reachable_in_k:
             if value[0] not in reachable_dict:
-                reachable_dict[value[0]]= []
+                reachable_dict[value[0]] = []
             reachable_dict[value[0]].append(value[1])
-
 
         # sort the values for each node from biggest to smallest
         for key in reachable_dict:
             reachable_dict[key] = sorted(reachable_dict[key], reverse=True)
 
-        reachable_dict = self._prune_congruence(reachable_dict, cycles, chains,  L,  n)
-        reachable_dict = self._prune_maximum(reachable_dict, cycles, chains,  L,  m,n)
+        reachable_dict = self._prune_congruence(reachable_dict, cycles, chains, L, n)
+        reachable_dict = self._prune_maximum(reachable_dict, cycles, chains, L, m, n)
 
-        new_reachable= set()
+        new_reachable = set()
         for key in reachable_dict:
             for item in reachable_dict[key]:
                 new_reachable.add((key, item))
 
-
-
         return new_reachable
 
-    def _prune_congruence(self, reachable_in_k, cycles, chains, L,  n ):
+    def _prune_congruence(self, reachable_in_k, cycles, chains, L, n):
         """
         DEPRECATED
         the first pruning step of the algorithm
@@ -491,7 +490,7 @@ class Graph:
         :return:
         """
         for key in reachable_in_k:
-            reachable_in_k[key] = reachable_in_k[key][: min(len(reachable_in_k[key]), (n+L)*(m+1))]
+            reachable_in_k[key] = reachable_in_k[key][: min(len(reachable_in_k[key]), (n + L) * (m + 1))]
 
         return reachable_in_k
 
@@ -513,15 +512,15 @@ class Graph:
             for node in chains:
 
                 for chain in chains[node]:
-                    #TODO ensure 2 chains of same residue do not fuck with eachother
                     for i in range(min(top, chain.len())):
-                        can_reach =  False
+                        can_reach = False
                         for o_i in U_n.list_O_i():
                             value = chain[chain.len() - i - 1]
-                            can_reach = Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles((node, value),o_i[0],L,o_i[1])
+                            can_reach = Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(
+                                (node, value), o_i[0], L, o_i[1])
                             if can_reach:
 
-                                U_n.edit_non_triv_q_residueclass(node, chain.step, chain.minVal%chain.step, chain.minVal, chain.get_index_list(chain.find_index(value),int(chain.len())))
+                                new_minval = chain.minVal
 
                                 change = True
                                 if i == 0:
@@ -531,11 +530,14 @@ class Graph:
                                         to_delete.add(node)
                                 else:
                                     chain.minVal = chain[chain.len() - (i - 1) - 1]
+
+                                U_n.edit_non_triv_q_residueclass(node, chain.step, chain.minVal % chain.step,
+                                                                 new_minval, chains[node])
                                 break
                         if can_reach:
                             break
             for node in to_delete:
                 del chains[node]
-            n+=1
+            n += 1
 
-        return chains,n
+        return chains, n

@@ -92,9 +92,15 @@ class Un:
 
         return return_val
 
-    def edit_non_triv_q_residueclass(self, node, W, allowed_a_i, new_minval, new_bi):
+    def edit_non_triv_q_residueclass(self, node, W, allowed_a_i, new_minval, all_chains):
         for cycle in self.O_i2[node]:
             if cycle[1] == W:
                 if allowed_a_i in self.O_i2[node][cycle]:
-                    new_oi = O_equationset(min(new_minval, self.O_i2[node][cycle][allowed_a_i].l), W , self.O_i2[node][cycle][allowed_a_i].a_i, new_bi)
+                    new_minval2 = min(new_minval, self.O_i2[node][cycle][allowed_a_i].l)
+                    new_bi = []
+                    for chain in all_chains:
+                        if chain.step == W and chain.minVal >= new_minval2:
+                            new_bi+= chain.get_index_list(0, chain.len())
+                    new_oi = O_equationset(new_minval2, W , self.O_i2[node][cycle][allowed_a_i].a_i, new_bi)
                     self.O_i2[node][cycle][allowed_a_i] = new_oi
+                    return new_oi
