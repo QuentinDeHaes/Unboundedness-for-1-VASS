@@ -10,7 +10,8 @@ def Coverability_in_1Vass_w_Disequality_guards(g, source):
     g.to_dot("dot.dot")
     chains = g.get_bounded_chains(cycles)
     new_chains, n = g.bndCoverWObstacles(cycles, chains)
-    is_reachable = g.coverable(source, new_chains, cycles, n)
+    # is_reachable = g.coverable(source, new_chains, cycles, n)
+    is_reachable = g.coverable((source), g.BoundedCoverWithObstacles_GetL())
     return is_reachable
 
 if __name__ == "__main__":

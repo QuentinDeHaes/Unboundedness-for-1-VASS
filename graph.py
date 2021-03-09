@@ -375,124 +375,6 @@ class Graph:
         L = Q * pow(poly1, 2) + Q * Q + 3
         return L
 
-    def _getAllReachable1Step(self, original_nodes, complete_cycles):
-        """
-        DEPRECATED
-        return all node, value pairs reachable from any of the pairs in the original nodes in a single step
-        :param original_nodes: a set of node, value, complete_path pairs from which we check what they can reach in 1 step
-        :return: a set of node, value pairs that can be reached from any of original_nodes in a single step
-        """
-        reachable = set()
-        for node in original_nodes:  # for each node in our set, we gather it's reachable states and add them to our result
-            lis = node[0].get_edges()
-            for new_node in lis:  # a newly reachable node is only reachable by another node, each node can only have V-1 O(V) outgoing edges
-                if node[1] + new_node[1] not in new_node[0].get_disequalities() and node[1] + new_node[1] >= 0:
-                    # check if this node does not infringe upon any disequalities or other rules
-                    tup = (new_node[0], node[1] + new_node[1], node[2] + (node[0],))
-                    if check_primitive(tup,
-                                       complete_cycles):  # check if the new node does not possess any cycles in it O(L*V³)
-                        reachable.add(tup)
-
-        return reachable
-
-    def coverable(self, value, chains, complete_cycles, n):
-        """
-        DEPRECATED
-        check if a node, value pair can reach the current unbounded set in polynomial time and return true if so
-        :param complete_cycles: the frequently used list of all cycles in the graph
-        :param value: a node, value pair needed to check if it can reach current unbounded
-        :param chains: the list of all currently bounded chains in the cycle
-        :return: BOOL can it reach unbounded, yes or no
-        """
-        nodes_in_cycle = get_all_nodes_from_cycles(complete_cycles)
-        reachable_in_k = {value + (tuple(),)}
-        L = self.BoundedCoverWithObstacles_GetL()
-        m = len(chains)
-        for i in range(L):
-            reachable_in_k = self._getAllReachable1Step(reachable_in_k, complete_cycles)
-            if len(
-                    reachable_in_k) == 0:  # greatly increase efficiency as usually relatively quickly empty in small grpahs
-                return False
-
-            for val in reachable_in_k:
-                if val[0] in nodes_in_cycle and not val[1] < min(val[
-                                                                     0].minimal_cyclable.values()):  # it has a path to a cycle and it's value allows taking of a cycle (by it's minimal)
-                    if val[0] in chains:
-                        not_in_closure = True
-                        for closure in chains[val[0]]:
-                            if val[1] in closure:
-                                not_in_closure = False
-                                break
-
-                        if not_in_closure:
-                            return True
-                    else:
-                        return True
-            reachable_in_k = self._prune(reachable_in_k, complete_cycles, chains, L, m, n)
-
-        return False
-
-    def _prune(self, reachable_in_k, cycles, chains, L, m, n):
-        """
-        DEPRECATED
-        method used to prune after each step of the coverability algorithm
-        :param reachable_in_k: the values the coverability method generated with a single step
-        :param values_to_prune: a list of values in another bounded chain, no longer needed for this and also needs pruning
-        :return: the pruned version of the method
-        """
-
-        reachable_dict = dict()
-        # turn the set of reachable values in a dict per state to make it easier to prune (as pruning is done as max per state)
-        for value in reachable_in_k:
-            if value[0] not in reachable_dict:
-                reachable_dict[value[0]] = []
-            reachable_dict[value[0]].append(value[1])
-
-        # sort the values for each node from biggest to smallest
-        for key in reachable_dict:
-            reachable_dict[key] = sorted(reachable_dict[key], reverse=True)
-
-        reachable_dict = self._prune_congruence(reachable_dict, cycles, chains, L, n)
-        reachable_dict = self._prune_maximum(reachable_dict, cycles, chains, L, m, n)
-
-        new_reachable = set()
-        for key in reachable_dict:
-            for item in reachable_dict[key]:
-                new_reachable.add((key, item))
-
-        return new_reachable
-
-    def _prune_congruence(self, reachable_in_k, cycles, chains, L, n):
-        """
-        DEPRECATED
-        the first pruning step of the algorithm
-        :param reachable_in_k: the original set of reachable values to be pruned
-        :param cycles: all cycles of the graph
-        :param chains: a list of all non-trivial q-residue classes
-        :param L:
-        :param n:
-        :return:
-        :return: the pruned reachable_in_k
-        """
-        # TODO make this!!!
-        new_reachable_in_k = reachable_in_k
-        return new_reachable_in_k
-
-    def _prune_maximum(self, reachable_in_k, cycles, chains, L, m, n):
-        """
-        DEPRECATED
-        :param reachable_in_k:
-        :param cycles:
-        :param chains:
-        :param L:
-        :param m:
-        :param n:
-        :return:
-        """
-        for key in reachable_in_k:
-            reachable_in_k[key] = reachable_in_k[key][: min(len(reachable_in_k[key]), (n + L) * (m + 1))]
-
-        return reachable_in_k
 
     def bndCoverWObstacles(self, cycles, chains):
         """
@@ -501,7 +383,7 @@ class Graph:
         :param chains: the list of bounded chains
         :return: the bounded chains after removing the non-trivial unbounded values, i.e the complement of U0
         """
-        U_n = Un(self, cycles, chains)
+        self.U_n = Un(self, cycles, chains)
         top = self.top()
         change = True
         n = 0
@@ -514,7 +396,7 @@ class Graph:
                 for chain in chains[node]:
                     for i in range(min(top, chain.len())):
                         can_reach = False
-                        for o_i in U_n.list_O_i():
+                        for o_i in self.U_n.list_O_i():
                             value = chain[chain.len() - i - 1]
                             can_reach = Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(
                                 (node, value), o_i[0], L, o_i[1])
@@ -531,7 +413,7 @@ class Graph:
                                 else:
                                     chain.minVal = chain[chain.len() - (i - 1) - 1]
 
-                                U_n.edit_non_triv_q_residueclass(node, chain.step, chain.minVal % chain.step,
+                                self.U_n.edit_non_triv_q_residueclass(node, chain.step, chain.minVal % chain.step,
                                                                  new_minval, chains[node])
                                 break
                         if can_reach:
@@ -541,3 +423,18 @@ class Graph:
             n += 1
 
         return chains, n
+
+    def coverable(self, source, L):
+        """
+        check whether a source can reach our current version(normally final version if used at proper time) of U_n
+        :param source:the source
+        :param L: the polynomial value L given to many functions gotten from g.BoundedCoverWithObstacles_GetL()
+        :return: bool :is it coverable?
+        """
+        for o_i in self.U_n.list_O_i():
+            result =  Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(
+                source, o_i[0], L, o_i[1])
+
+            if result:
+                return True
+        return False
