@@ -13,6 +13,11 @@ class O_equationset:
         self.b_i = b_i
 
     def __contains__(self, item):
+        """
+        check whether the O_equationset contains item
+        :param item: the item to check
+        :return: bool
+        """
         if item < self.l:
             return False
         for a in self.a_i:
