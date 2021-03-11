@@ -375,7 +375,6 @@ class Graph:
         L = Q * pow(poly1, 2) + Q * Q + 3
         return L
 
-
     def bndCoverWObstacles(self, cycles, chains):
         """
         the method used to acquire the non-trivial unbounded values
@@ -383,20 +382,21 @@ class Graph:
         :param chains: the list of bounded chains
         :return: the bounded chains after removing the non-trivial unbounded values, i.e the complement of U0
         """
-        self.U_n = Un(self, cycles, chains)
-        top = self.top()
+        self.U_n = Un(self, cycles, chains)  # generate U_0
+        top = self.top()  # get the value Top a polynomial based on the amount of nodes
         change = True
         n = 0
-        L = self.BoundedCoverWithObstacles_GetL()
-        while change:
+        L = self.BoundedCoverWithObstacles_GetL()  # get the value L a polynomial based on the amount of nodes
+        while change:  # run until U_n-1 == U_n
             change = False
             to_delete = set()
-            for node in chains:
+            for node in chains:  # check every node in the positive cycles (all bounded chains)
 
-                for chain in chains[node]:
-                    for i in range(min(top, chain.len())):
+                for chain in chains[node]:  # check all bounded chains linked to the given node
+                    for i in range(min(top,
+                                       chain.len())):  # check the highest top values in the chain to see whether it can reach current U_n (starting from the highest)
                         can_reach = False
-                        for o_i in self.U_n.list_O_i():
+                        for o_i in self.U_n.list_O_i():  # check whether it can reach any O_i in U_n
                             value = chain[chain.len() - i - 1]
                             can_reach = Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(
                                 (node, value), o_i[0], L, o_i[1])
@@ -410,11 +410,11 @@ class Graph:
                                     chains[node].remove(chain)
                                     if len(chains[node]) == 0:
                                         to_delete.add(node)
-                                else:
+                                else:  # reduce the  chain to only the top values that cannot reach U_n (as all below the one that can reach U_n can simply take the cycle some times)
                                     chain.minVal = chain[chain.len() - (i - 1) - 1]
-
+                                # edit U_n to to add the new values
                                 self.U_n.edit_non_triv_q_residueclass(node, chain.step, chain.minVal % chain.step,
-                                                                 new_minval, chains[node])
+                                                                      new_minval, chains[node])
                                 break
                         if can_reach:
                             break
@@ -431,8 +431,8 @@ class Graph:
         :param L: the polynomial value L given to many functions gotten from g.BoundedCoverWithObstacles_GetL()
         :return: bool :is it coverable?
         """
-        for o_i in self.U_n.list_O_i():
-            result =  Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(
+        for o_i in self.U_n.list_O_i():  # check for every O_i in U_n if source can reach itl
+            result = Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(
                 source, o_i[0], L, o_i[1])
 
             if result:
