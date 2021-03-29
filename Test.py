@@ -7,6 +7,7 @@ from Closure import Closure
 import math
 
 
+
 class MyTestCase(unittest.TestCase):
     g = generate_example()
     s0 = g.start_node
@@ -202,6 +203,7 @@ class MyTestCase(unittest.TestCase):
         value = (self.s1, 5, (self.s0, self.s1, self.s2))
         ans = check_primitive(value, cycles)
         self.assertFalse(ans)
+
 
 
 if __name__ == '__main__':
