@@ -67,11 +67,12 @@ class Closure:
             raise Exception("value out of bounds")
         return self.minVal + self.step * item
 
-    def __eq__(self, other) ->bool:
-        if isinstance(other, Closure) and self.maxVal == other.maxVal and self.minVal == other.minVal and self.step == other.step:
+    def __eq__(self, other) -> bool:
+        if isinstance(other,
+                      Closure) and self.maxVal == other.maxVal and self.minVal == other.minVal and self.step == other.step:
             return True
         if isinstance(other, list) and len(other) == self.len():
-            minitem = self.minVal-1
+            minitem = self.minVal - 1
             val = True
             for item in other:
                 if not item in self or not item > minitem:
@@ -96,7 +97,7 @@ class Closure:
             raise Exception("value not part of closure, so no index found")
         if self.minVal is None:
             raise Exception("lower unbounded closure has no indices")
-        return (value-self.minVal)//self.step
+        return (value - self.minVal) // self.step
 
     def get_index_list(self, start, end):
         """
@@ -110,3 +111,7 @@ class Closure:
             lis.append(self[i])
 
         return lis
+
+    def __repr__(self):
+        string = "Closure: minimumvalue:{} , maximumvalue:{}, stepsize:{}".format(self.minVal, self.maxVal, self.step)
+        return string

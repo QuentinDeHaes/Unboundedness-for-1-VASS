@@ -206,6 +206,69 @@ class Graph:
 
         return complete_cycles
 
+    def get_cycles_NEW(self):
+        self.cycles = dict()
+        max_weight = 0
+        for node in self.nodes:
+            for edge in node.get_edges():
+                max_weight = max(abs(edge[1]), max_weight)
+
+        cycle_set = set()
+        self.nodes_in_cycles = []
+        for node in self.nodes:
+            cycle = self.get_cycle_singleNode(node, max_weight)
+            if cycle[2] != -1:
+                self.nodes_in_cycles.append(node)
+                add_to_list = True
+                for old_cycle in cycle_set:
+                    if old_cycle[1] == cycle[2] and (set(old_cycle[0]) == set(cycle[1])):
+                        add_to_list = False
+                        break
+                if add_to_list:
+                    cycle_set.add((tuple(cycle[1]), cycle[2]))
+        cycle_set2 = list(cycle_set)
+        for i in range(len(cycle_set2)):
+            self.cycles[cycle_set2[i]] = i
+        return cycle_set
+
+    def get_cycle_singleNode(self, node, maxWeight):
+
+        maxval = 0
+        minval = -len(self.nodes) * maxWeight
+        res = 0, [], -1
+        while minval <= maxval:
+            test_val = (maxval + minval) // 2
+            result = self._locate_cycle_dfs([node], test_val, 0)
+            if result[0]:
+                res = test_val, result[1], result[2]
+                new_minval = test_val
+                new_maxval = maxval
+            else:
+                new_minval = minval
+                new_maxval = test_val
+            if new_minval == minval and new_maxval == maxval:  # fixing a bug where it stays stuck due to integerdivision
+                # because we do need to try if they're equal at least once, due to minval theoretically possibly starting at 0
+                break
+            else:
+                minval = new_minval
+                maxval = new_maxval
+
+        return res
+
+    def _locate_cycle_dfs(self, current_path, min_score, current_score):
+        if current_path[0] == current_path[-1] and len(current_path) > 1:
+            if current_score > 0:
+                return True, current_path, current_score
+            else:  # we have located a negative cycle (with a score less than minscore)
+                return False, [], -1
+
+        for node, w in current_path[-1].edges:
+            if current_score + w >= min_score and node not in current_path[1:]:
+                value = self._locate_cycle_dfs(current_path + [node], min_score, current_score + w)
+                if value[0]:
+                    return value
+        return False, [], -1
+
     def set_non_allowable_values(self, complete_cycles):
         """
         set on each node on which values, the cycle can't be taken

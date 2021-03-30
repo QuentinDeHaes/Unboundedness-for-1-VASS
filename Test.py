@@ -205,6 +205,16 @@ class MyTestCase(unittest.TestCase):
         self.assertFalse(ans)
 
 
+    def test_new_cycling(self):
+        self.g.bellman_ford_alg()
+        cycles = self.g.get_cycles()
+
+        new_cycles = self.g.get_cycles_NEW()
+        for cycle in cycles:
+            for new_cycle in new_cycles:
+                if cycle[1] == new_cycle[1]:
+                    self.assertSetEqual(set(cycle[0]), set(new_cycle[0]))
+
 
 if __name__ == '__main__':
     unittest.main()
