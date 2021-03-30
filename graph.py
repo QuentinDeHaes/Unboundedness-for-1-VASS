@@ -110,8 +110,9 @@ class Graph:
                 for edge in node.edges:
                     edge[0].update_distance(node.distance + edge[1])
 
-    def get_cycles(self):
+    def get_cycles_OLD(self):
         """
+        DEPRECATED
         we use bellman ford to find cycles, because we need positive cycles and it finds negative ones we simply negate
         all values on edges
         :return: a list of all nodes in cycles and their incrementation
@@ -208,7 +209,7 @@ class Graph:
 
         return complete_cycles
 
-    def get_cycles_NEW(self):
+    def get_cycles(self):
         """
         locate all cycles necessary for our algorithm, for each node in a positive cycle, it's optimal positive cycle (for each the one with the highest pmin value)
         :return:  a set of all nodes in cycles and their incrementation
@@ -376,7 +377,6 @@ class Graph:
         for our algorithm, we need U₀, which is the unbounded chains from the positive cycles, they are unbounded,
         thus they will be represented using upward closures, we only need the chains above the disequalities
          (the amount of disequalties is bounded by O(V), so the amount of chains we need is also bounded by O(V)
-        :param complete_cycles: the cycles as received by the get_cycles method
         :return: None (the changes happen within the graph)
         O(V⁴)
 

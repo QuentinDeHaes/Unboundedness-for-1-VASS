@@ -163,13 +163,12 @@ class MyTestCase(unittest.TestCase):
 
 
     def test_get_all_nodes_from_cycles(self):
-        self.g.bellman_ford_alg()
         cycles = self.g.get_cycles()
         val = get_all_nodes_from_cycles(cycles)
         self.assertSetEqual(val, {self.s1, self.s2, self.s4, self.s5, self.s6, self.s10, self.s11, self.s12, self.s13})
 
     def test_turn_cycle(self):
-        self.g.bellman_ford_alg()
+        # self.g.bellman_ford_alg()
         cycles = self.g.get_cycles()
         cycle = ()
         for c in cycles:
@@ -182,7 +181,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(newcycle2, (self.s6, self.s4, self.s5, self.s6))
 
     def test_check_primitive(self):
-        self.g.bellman_ford_alg()
         cycles = self.g.get_cycles()
         value = (self.s4, 5, (self.s0, self.s1, self.s3))
         ans = check_primitive(value, cycles)
@@ -197,9 +195,9 @@ class MyTestCase(unittest.TestCase):
 
     def test_new_cycling(self):
         self.g.bellman_ford_alg()
-        cycles = self.g.get_cycles()
+        cycles = self.g.get_cycles_OLD()
 
-        new_cycles = self.g.get_cycles_NEW()
+        new_cycles = self.g.get_cycles()
         for cycle in cycles:
             for new_cycle in new_cycles:
                 if cycle[1] == new_cycle[1]:

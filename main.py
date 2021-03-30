@@ -5,9 +5,7 @@ from generate_graphs_paper import generate_1_pos_neg_cyc
 
 
 def Coverability_in_1Vass_w_Disequality_guards(g, source, print_closures=False):
-    # g.bellman_ford_alg()
-    # cycles = g.get_cycles()
-    cycles = g.get_cycles_NEW()
+    cycles = g.get_cycles()
     g.set_non_allowable_values(cycles)
     # g.get_unbounded_chains()
     # g.to_dot("dot.dot")
