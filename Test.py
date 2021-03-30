@@ -76,7 +76,7 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(node.get_distance(), math.inf)
 
         self.g.bellman_ford_alg()
-        cycles = self.g.get_cycles()
+        cycles = self.g.get_cycles_OLD()
         self.assertEqual(len(cycles), 3, "all 3 cycles are not found")
         for cycle in cycles:
             if cycle[1] == 6:
@@ -120,7 +120,6 @@ class MyTestCase(unittest.TestCase):
 
 
     def test_non_allowed_values(self):
-        self.g.bellman_ford_alg()
         cycles = self.g.get_cycles()
         self.g.set_non_allowable_values(cycles)
         for cycle in cycles:
