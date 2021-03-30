@@ -63,11 +63,11 @@ class MyTestCase(unittest.TestCase):
                                                                                     nodes[0],
                                                                                     g2.BoundedCoverWithObstacles_GetL(),
                                                                                     O3))
-        # self.assertFalse(
-        #     Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(g2, (nodes[0], 0),
-        #                                                                             nodes[0],
-        #                                                                             g2.BoundedCoverWithObstacles_GetL(),
-        #                                                                             O4))
+        self.assertFalse(
+            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles( (nodes[0], 0),
+                                                                                    nodes[0],
+                                                                                    g2.BoundedCoverWithObstacles_GetL(),
+                                                                                    O4))
 
 
 if __name__ == '__main__':
