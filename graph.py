@@ -207,6 +207,10 @@ class Graph:
         return complete_cycles
 
     def get_cycles_NEW(self):
+        """
+        locate all cycles necessary for our algorithm, for each node in a positive cycle, it's optimal positive cycle (for each the one with the highest pmin value)
+        :return:  a set of all nodes in cycles and their incrementation
+        """
         self.cycles = dict()
         max_weight = 0
         for node in self.nodes:
@@ -232,6 +236,12 @@ class Graph:
         return cycle_set
 
     def get_cycle_singleNode(self, node, maxWeight):
+        """
+        get the optimal positive cycle (highest pmin) for a given node if one exists
+        :param node: the node for which we search the optimal cycle
+        :param maxWeight: the highest absolute value of weight any edge in the graph posesses
+        :return:
+        """
 
         maxval = 0
         minval = -len(self.nodes) * maxWeight
@@ -256,10 +266,18 @@ class Graph:
         return res
 
     def _locate_cycle_dfs(self, current_path, min_score, current_score):
+        """
+        the recursive function to acquire a positive cycle with a pmin higher than (or equal to minscore)
+        :param current_path: a list of all nodes we have already visited
+        :param min_score: the current minimal score, if we go below, we need to try another path
+        :param current_score: the current score of our cycle
+        :return: successbool, complete_cycle (if succesful else []), weight of the cycle (if succesfull else -1)
+        """
+
         if current_path[0] == current_path[-1] and len(current_path) > 1:
             if current_score > 0:
                 return True, current_path, current_score
-            else:  # we have located a negative cycle (with a score less than minscore)
+            else:  # we have located a negative cycle (with a score higher than minscore)
                 return False, [], -1
 
         for node, w in current_path[-1].edges:
