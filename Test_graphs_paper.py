@@ -21,17 +21,16 @@ class MyTestCase(unittest.TestCase):
 
     def test_faulty_cycle(self):
         g, nodes = generate_lossy_cycle()
-        g.bellman_ford_alg()
-        cycles = g.get_cycles()
+        cycles = g.get_cycles_NEW()
         self.assertEqual(len(cycles), 2, "cycle missed")
         print(cycles)
 
     def test_single_pos_cyc_chains(self):
         g, nodes = generate_1_pos_cyc()
         g.bellman_ford_alg()
-        cycles = g.get_cycles()
+        cycles = g.get_cycles_NEW()
         g.set_non_allowable_values(cycles)
-        chains = g.get_bounded_chains(cycles)
+        chains = g.get_bounded_chains()
         self.assertEqual(len(cycles), 1, "incorrect cycles located")
         self.assertIn(nodes[1], chains)
         self.assertIn(nodes[2], chains)

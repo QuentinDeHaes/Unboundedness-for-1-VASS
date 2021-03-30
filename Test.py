@@ -117,8 +117,7 @@ class MyTestCase(unittest.TestCase):
         gcopy = graph.__copy__()
 
         self.assertEqual(graph.start_node.get_id(), gcopy.start_node.get_id())
-        if hasattr(graph, "cycles"):
-            self.assertEqual(graph.cycles, gcopy.cycles)
+
 
     def test_non_allowed_values(self):
         self.g.bellman_ford_alg()
@@ -128,49 +127,40 @@ class MyTestCase(unittest.TestCase):
             if cycle[1] == 6:
                 for node in cycle[0]:
                     if node.get_id() == 1:
-                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [54])
-                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 12)
+                        self.assertEqual(node.non_cyclables, [54])
+                        self.assertEqual(node.minimal_cyclable, 12)
                     if node.get_id() == 2:
-                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [42])
-                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 0)
+                        self.assertEqual(node.non_cyclables, [42])
+                        self.assertEqual(node.minimal_cyclable, 0)
 
             if cycle[1] == 9:
                 for node in cycle[0]:
                     if node.get_id() == 4:
-                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [81, 93, 96])
-                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 52)
+                        self.assertEqual(node.non_cyclables, [81, 93, 96])
+                        self.assertEqual(node.minimal_cyclable, 52)
                     if node.get_id() == 5:
-                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [32, 44, 29])
-                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 0)
+                        self.assertEqual(node.non_cyclables, [32, 44, 29])
+                        self.assertEqual(node.minimal_cyclable, 0)
                     if node.get_id() == 6:
-                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [87, 81, 84])
-                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 43)
+                        self.assertEqual(node.non_cyclables, [87, 81, 84])
+                        self.assertEqual(node.minimal_cyclable, 43)
 
             if cycle[1] == 10:
                 for node in cycle[0]:
                     if node.get_id() == 10:
-                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [110, 123, 129, 126])
-                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 80)
+                        self.assertEqual(node.non_cyclables, [110, 123, 129, 126])
+                        self.assertEqual(node.minimal_cyclable, 80)
                     if node.get_id() == 11:
-                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [33, 49, 46, 30])
-                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 0)
+                        self.assertEqual(node.non_cyclables, [33, 49, 46, 30])
+                        self.assertEqual(node.minimal_cyclable, 0)
                     if node.get_id() == 12:
-                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [120, 127, 111, 114])
-                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 71)
+                        self.assertEqual(node.non_cyclables, [120, 127, 111, 114])
+                        self.assertEqual(node.minimal_cyclable, 71)
 
                     if node.get_id() == 13:
-                        self.assertEqual(node.non_cyclables[self.g.cycles[cycle]], [120, 114, 117, 123])
-                        self.assertEqual(node.minimal_cyclable[self.g.cycles[cycle]], 74)
+                        self.assertEqual(node.non_cyclables, [120, 114, 117, 123])
+                        self.assertEqual(node.minimal_cyclable, 74)
 
-    def test_reachable(self):
-        self.g.bellman_ford_alg()
-        cycles = self.g.get_cycles()
-        totalval = self.g._getAllReachable1Step({(self.s0, 0, tuple())}, cycles)
-        self.assertSetEqual(totalval, {(self.s1, 12, (self.s0,))})
-        new = self.g._getAllReachable1Step(totalval, cycles)
-        self.assertSetEqual(new, {(self.s2, 0, (self.s0, self.s1)), (self.s3, 24, (self.s0, self.s1))})
-        new3 = self.g._getAllReachable1Step({(self.s4, 93, tuple())}, cycles)
-        self.assertSetEqual(new3, {(self.s7, 97, (self.s4,))})
 
     def test_get_all_nodes_from_cycles(self):
         self.g.bellman_ford_alg()

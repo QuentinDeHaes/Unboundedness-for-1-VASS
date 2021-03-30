@@ -53,6 +53,8 @@ class Graph:
         cop.nodes = deepcopy(self.nodes)
         if hasattr(self, "cycles"):
             cop.cycles = deepcopy(self.cycles)
+        if hasattr(self, 'nodes_in_cycles'):
+            cop.nodes_in_cycles = deepcopy(self.nodes_in_cycles)
         return cop
 
     def to_dot(self, filename):
@@ -289,7 +291,7 @@ class Graph:
 
     def set_non_allowable_values(self, complete_cycles):
         """
-        set on each node on which values, the cycle can't be taken
+        set on each node on which values, the optimal cycle can't be taken
         :param complete_cycles: the cycles as received by the get_cycles method
         :return:None (the changes happen on the node-classes)
         this code is O(V⁴)
@@ -321,11 +323,13 @@ class Graph:
                         minimal_add = current_add
 
                 if not hasattr(cycle[0][node_i], 'non_cyclables'):
-                    cycle[0][node_i].non_cyclables = dict()
-                    cycle[0][node_i].minimal_cyclable = dict()
+                    cycle[0][node_i].non_cyclables = []
+                    cycle[0][node_i].minimal_cyclable = float("inf")
 
-                cycle[0][node_i].non_cyclables[self.cycles[cycle]] = not_allowed
-                cycle[0][node_i].minimal_cyclable[self.cycles[cycle]] = -minimal_add
+                if cycle[0][node_i].minimal_cyclable > -minimal_add:
+                    cycle[0][node_i].non_cyclables = not_allowed
+                    cycle[0][node_i].minimal_cyclable = -minimal_add
+                    cycle[0][node_i].optimal_cycle = cycle
 
     def DEPRECATED_get_bounded_chains_DEPRECATED(self, complete_cycles):
         """
@@ -367,7 +371,7 @@ class Graph:
 
     #    DEPRECATED
 
-    def get_unbounded_chains(self, complete_cycles):
+    def get_unbounded_chains(self):
         """
         for our algorithm, we need U₀, which is the unbounded chains from the positive cycles, they are unbounded,
         thus they will be represented using upward closures, we only need the chains above the disequalities
@@ -378,50 +382,46 @@ class Graph:
 
         """
         self.U0 = list()
-        # O(V²) to run over all cycles
-        for cycle in complete_cycles:
-            # O(V) to run over an entire cycle
-            for node_i in range(len(cycle[0]) - 1):
+        for node in self.nodes_in_cycles:
+            optimal_cycle = node.optimal_cycle
+            non_cyclables = node.non_cyclables
+            minimal_cyclable = node.minimal_cyclable
+            positive_cycle_value = optimal_cycle[1]
+            # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
+            non_cyclables = chain_max_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
+            # O(V) as each node can have as many non_cyclables as disequalities in the cycle (which is bounded by nodes)
+            for non_cyc in non_cyclables:
+                self.U0.append((node,
+                                Closure(non_cyclables[non_cyc] + positive_cycle_value, None, positive_cycle_value)))
 
-                non_cyclables = cycle[0][node_i].non_cyclables[self.cycles[cycle]]
-                minimal_cyclable = cycle[0][node_i].minimal_cyclable[self.cycles[cycle]]
-                positive_cycle_value = cycle[1]
-                # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
-                non_cyclables = chain_max_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
-                # O(V) as each node can have as many non_cyclables as disequalities in the cycle (which is bounded by nodes)
-                for non_cyc in non_cyclables:
-                    self.U0.append((cycle[0][node_i],
-                                    Closure(non_cyclables[non_cyc] + positive_cycle_value, None, positive_cycle_value)))
-
-    def get_bounded_chains(self, complete_cycles):
+    def get_bounded_chains(self):
         """
         in order to continue our algorithm, we need the bounded chains, so we'll calculate them
         O(V⁴)
         """
         bounded_chains = dict(list())
         # O(V²) to run over all cycles
-        for cycle in complete_cycles:
-            # O(V) to run over an entire cycle
-            for node_i in range(len(cycle[0]) - 1):
+        for node in self.nodes_in_cycles:
+            optimal_cycle = node.optimal_cycle
+            non_cyclables = node.non_cyclables
+            minimal_cyclable = node.minimal_cyclable
+            positive_cycle_value = optimal_cycle[1]
 
-                non_cyclables = cycle[0][node_i].non_cyclables[self.cycles[cycle]]
-                minimal_cyclable = cycle[0][node_i].minimal_cyclable[self.cycles[cycle]]
-                positive_cycle_value = cycle[1]
 
-                # O(V²) as long as we assume that the maximum amount of disequalities a node can have is fixed
-                non_cyclables = cleanup_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
-                # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
-                for key in non_cyclables:
-                    value = int(minimal_cyclable / positive_cycle_value) * positive_cycle_value + key
-                    if cycle[0][node_i] not in bounded_chains:
-                        bounded_chains[
-                            cycle[0][node_i]] = list()  # create the bounded chains of the node if they do not yet exist
-                    non_cyclables[key].insert(0, value)
+            # O(V²) as long as we assume that the maximum amount of disequalities a node can have is fixed
+            non_cyclables = cleanup_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
+            # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
+            for key in non_cyclables:
+                value = int(minimal_cyclable / positive_cycle_value) * positive_cycle_value + key
+                if node not in bounded_chains:
+                    bounded_chains[
+                        node] = list()  # create the bounded chains of the node if they do not yet exist
+                non_cyclables[key].insert(0, value)
 
-                    for i in range(len(non_cyclables[key]) - 1):  # create all closure used for the chain
+                for i in range(len(non_cyclables[key]) - 1):  # create all closure used for the chain
 
-                        bounded_chains[cycle[0][node_i]].append(
-                            Closure(non_cyclables[key][i], non_cyclables[key][i + 1], positive_cycle_value))
+                    bounded_chains[node].append(
+                        Closure(non_cyclables[key][i], non_cyclables[key][i + 1], positive_cycle_value))
 
         return bounded_chains
 
@@ -463,7 +463,7 @@ class Graph:
         :param chains: the list of bounded chains
         :return: the bounded chains after removing the non-trivial unbounded values, i.e the complement of U0
         """
-        self.U_n = Un(self, cycles, chains)  # generate U_0
+        self.U_n = Un(self,  chains)  # generate U_0
         top = self.top()  # get the value Top a polynomial based on the amount of nodes
         change = True
         n = 0

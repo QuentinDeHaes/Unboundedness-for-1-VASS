@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
     def test_bcwo(self):
         O = Bounded_coverability_with_obstacles.O_equationset(52, 6, [1, 2], [63, 75])
         self.assertTrue(
-            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(self.g, (self.g.start_node, 0),
+            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles((self.g.start_node, 0),
                                                                                     self.s4,
                                                                                     self.g.BoundedCoverWithObstacles_GetL(),
                                                                                     O))
@@ -28,7 +28,7 @@ class MyTestCase(unittest.TestCase):
         # secretly allow no value without stating it directly
         O2 = Bounded_coverability_with_obstacles.O_equationset(52, 6, [0, 1, 2, 3, 4, 5], [63, 75])
         self.assertFalse(
-            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(self.g, (self.g.start_node, 0),
+            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles((self.g.start_node, 0),
                                                                                     self.s4,
                                                                                     self.g.BoundedCoverWithObstacles_GetL(),
                                                                                     O2))
@@ -38,12 +38,12 @@ class MyTestCase(unittest.TestCase):
         O2 = Bounded_coverability_with_obstacles.O_equationset(52, 2, [0], [63, 75])
         O3 = Bounded_coverability_with_obstacles.O_equationset(52, 2, [1], [63, 75])
         self.assertFalse(
-            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(g2, (nodes[0], 0),
+            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles((nodes[0], 0),
                                                                                     nodes[0],
                                                                                     g2.BoundedCoverWithObstacles_GetL(),
                                                                                     O2))
         self.assertTrue(
-            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(g2, (nodes[0], 0),
+            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles( (nodes[0], 0),
                                                                                     nodes[0],
                                                                                     g2.BoundedCoverWithObstacles_GetL(),
                                                                                     O3))
@@ -54,12 +54,12 @@ class MyTestCase(unittest.TestCase):
         O3 = Bounded_coverability_with_obstacles.O_equationset(52, 2, [1], [63, 75])
         O4 = Bounded_coverability_with_obstacles.O_equationset(52, 2, [0, 1], [63, 75])
         self.assertTrue(
-            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(g2, (nodes[0], 0),
+            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles((nodes[0], 0),
                                                                                     nodes[0],
                                                                                     g2.BoundedCoverWithObstacles_GetL(),
                                                                                     O2))
         self.assertTrue(
-            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles(g2, (nodes[0], 0),
+            Bounded_coverability_with_obstacles.Bounded_coverability_with_obstacles((nodes[0], 0),
                                                                                     nodes[0],
                                                                                     g2.BoundedCoverWithObstacles_GetL(),
                                                                                     O3))

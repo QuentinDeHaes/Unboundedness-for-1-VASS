@@ -34,7 +34,7 @@ class Un:
     the complete representation of Un required in the BoundedCoverWObstacles sub-routine
     """
 
-    def __init__(self, g, cycles, complement):
+    def __init__(self, g,  complement):
         """
         Initialize U_0 by using it's complement, the complement is given as a set of closures
         :param g: the graph
@@ -44,32 +44,31 @@ class Un:
         self.O_i = set()  # Where we add the trivial q-residue classes
         self.O_i2 = dict()  # Where we add the non-trivial q-residue classes in a dict node -> dict(cycle-> O_i)
 
-        for cycle in cycles:  # Loop over all cycles
-            W = cycle[1]  # Get the weight of each cycle
-            for node in cycle[0][:-1]:  # loop over each (unique) node in the cycle
-                if node not in self.O_i2:  # initialise the node in the O_i2 dict if not yet done
-                    self.O_i2[node] = dict()
-                if cycle not in self.O_i2[node]:  # add the specific cycle to which the node belongs if not yet in there
-                    self.O_i2[node][cycle] = dict()
-                    # generate all values nescessary to generate the various values
-                l = node.minimal_cyclable[g.cycles[cycle]]
-                a_i = []
-                other_O_is = dict()
-                for closure in complement[node]:  # go over each bounded chain in the complement
-                    if closure.step == W:
-                        # TODo check whether the closure is actually from the cycle using l and minvalue sort off
-                        a_i.append(closure.minVal % W)
-                        other_O_is[closure.minVal % W] = max(closure.maxVal + W,
-                                                             0 if other_O_is.get(closure.minVal % W) is None else
-                                                             other_O_is[closure.minVal % W])
+        # for cycle in cycles:  # Loop over all cycles
+        #     W = cycle[1]  # Get the weight of each cycle
+        #     for node in cycle[0][:-1]:  # loop over each (unique) node in the cycle
+        for node in g.nodes_in_cycles:
+            W = node.optimal_cycle[1]
+            if node not in self.O_i2:  # initialise the node in the O_i2 dict if not yet done
+                self.O_i2[node] = dict()
+                # generate all values nescessary to generate the various values
+            l = node.minimal_cyclable
+            a_i = []
+            other_O_is = dict()
+            for closure in complement[node]:  # go over each bounded chain in the complement
+                if closure.step == W:
+                    a_i.append(closure.minVal % W)
+                    other_O_is[closure.minVal % W] = max(closure.maxVal + W,
+                                                         0 if other_O_is.get(closure.minVal % W) is None else
+                                                         other_O_is[closure.minVal % W])
 
-                O_i = O_equationset(l, W, a_i, [])
-                self.O_i.add((node, O_i))
-                for closure in other_O_is:
-                    bc = list(a_i)
-                    bc.remove(closure)
-                    O_i = O_equationset(other_O_is[closure], W, bc, [])
-                    self.O_i2[node][cycle][closure] = O_i
+            O_i = O_equationset(l, W, a_i, [])
+            self.O_i.add((node, O_i))
+            for closure in other_O_is:
+                bc = list(a_i)
+                bc.remove(closure)
+                O_i = O_equationset(other_O_is[closure], W, bc, [])
+                self.O_i2[node][closure] = O_i
 
     def add_residue_class(self, O: O_equationset) -> None:
         """
@@ -94,9 +93,11 @@ class Un:
         if item[0] not in self.O_i2:
             return False
         for attempt in self.O_i2[item[0]]:
-            if item[1] % attempt[1] in self.O_i2[item[0]][attempt]:
-                if item[1] in self.O_i2[item[0]][attempt][item[1] % attempt[1]]:
-                    return True
+            if item in self.O_i2[item[0]][attempt]:
+                return True
+            # if item[1] % attempt[1] in self.O_i2[item[0]][attempt]:
+            #     if item[1] in self.O_i2[item[0]][attempt][item[1] % attempt[1]]:
+            #         return True
 
         return False
 
@@ -108,9 +109,8 @@ class Un:
         return_val = list(self.O_i)
 
         for node in self.O_i2:
-            for cycle in self.O_i2[node]:
-                for a_i in self.O_i2[node][cycle]:
-                    return_val.append((node, self.O_i2[node][cycle][a_i]))
+            for a_i in self.O_i2[node]:
+                return_val.append((node, self.O_i2[node][a_i]))
 
         return return_val
 
@@ -124,14 +124,13 @@ class Un:
         :param all_chains: a list of all (currently) bounded chains
         :return:the newly edited q-residue class in form of an O_equationset
         """
-        for cycle in self.O_i2[node]:
-            if cycle[1] == W:
-                if allowed_a_i in self.O_i2[node][cycle]:
-                    new_minval2 = min(new_minval, self.O_i2[node][cycle][allowed_a_i].l)
-                    new_bi = []
-                    for chain in all_chains:
-                        if chain.step == W and chain.minVal >= new_minval2:
-                            new_bi += chain.get_index_list(0, chain.len())
-                    new_oi = O_equationset(new_minval2, W, self.O_i2[node][cycle][allowed_a_i].a_i, new_bi)
-                    self.O_i2[node][cycle][allowed_a_i] = new_oi
-                    return new_oi
+        if node.optimal_cycle[1] == W:
+            if allowed_a_i in self.O_i2[node]:
+                new_minval2 = min(new_minval, self.O_i2[node][allowed_a_i].l)
+                new_bi = []
+                for chain in all_chains:
+                    if chain.step == W and chain.minVal >= new_minval2:
+                        new_bi += chain.get_index_list(0, chain.len())
+                new_oi = O_equationset(new_minval2, W, self.O_i2[node][allowed_a_i].a_i, new_bi)
+                self.O_i2[node][allowed_a_i] = new_oi
+                return new_oi
