@@ -120,12 +120,6 @@ class Graph:
         - the next part is only a single bellman run so O(E)
         - and the final part is V-1 times O(V³E) so in total O(V⁴E)
         """
-        # TODO check possible issue with node being in 2 different cycles
-        # TODO possible issue with 2 cycles sharing nodes splitting and coming back with where
-        #  split has identical weight but different amount of nodes: can be fixed by making every cycle and
-        #  prospective cycle run 1 by one in (and update 1 by 1) but this will end in far less efficiency still
-        #
-
         self.start_node.distance = 0
         self.cycles = dict()
         # bellman ford needs V-1 iterations to certainly have shortest path (without negative cycles)
@@ -242,8 +236,8 @@ class Graph:
         """
         get the optimal positive cycle (highest pmin) for a given node if one exists
         :param node: the node for which we search the optimal cycle
-        :param maxWeight: the highest absolute value of weight any edge in the graph posesses
-        :return:
+        :param maxWeight: the highest absolute value of weight any edge in the graph possesses
+        :return: 3pair of optimal pmin, the cycle and the weight of the cycle
         """
 
         maxval = 0
@@ -289,6 +283,83 @@ class Graph:
                 if value[0]:
                     return value
         return False, [], -1
+
+    def _locate_cycle_bellman(self, current_path, min_score, current_score):
+        """
+        the cycle_location method using bellman ford, made as place in replacement to the _locate_cycle_df
+        method
+        :param current_path: a list of all nodes we have already visited
+        :param min_score: the current minimal score, if we go below, we need to try another path
+        :param current_score: the current score of our cycle
+        :return: successbool, complete_cycle (if succesful else []), weight of the cycle (if succesfull else -1)
+        """
+        self.reset_distances()
+        # start by setting up bellman so no infinities remain (if everything is reachable)
+        self.bellman_ford_alg()
+        edges_in_cycles = set()
+        starter_node = current_path[0]
+        success = False
+        for i in range(len(self.nodes) - 1):
+            # update distances from previous run
+            # O(E)
+            for edge in edges_in_cycles:
+                edge[1].update_distance(edge[0].distance - edge[2])
+            edges_in_cycles = set()
+
+            for node in self.nodes:
+                for edge in node.edges:
+                    # if ,after already doing entire bellman ford, there still is a change in the distance,
+                    # there exists a negative cycle, we will add this new node to the list
+                    if edge[0].distance > node.distance - edge[1]:
+                        edges_in_cycles.add((node, edge[0], edge[1]))
+                        # keep updating the graph until our starternode is the one that will be updating new nodes using it's edges
+                        if node == starter_node:
+                            success = True
+                            break
+                if success:
+                    break
+            if success:
+                break
+
+        if success:
+            possible_cycles = {((starter_node,), current_score)}
+            found_nodes = {starter_node}
+            for i in range(len(self.nodes) - 1):
+
+                edges_in_cycles = set()
+                for node in found_nodes:
+                    for edge in node.edges:
+                        # if ,after already doing entire bellman ford, there still is a change in the distance,
+                        # there exists a negative cycle, we will add this new node to the list
+                        if edge[0].distance > node.distance - edge[1]:
+                            edges_in_cycles.add((node, edge[0], edge[1]))
+                new_possible_cycles = set()
+                found_nodes = set()
+
+                for edge in edges_in_cycles:
+                    # every edge can only be in here once at a time, making this O(E)
+                    for cycle in possible_cycles:
+                        # because we know the maximum size of a cycle is V and the way this is constructed
+                        # and possible_cycles can only have V! entries, which falls under O(V²)
+                        # making these for-loops O(EV³)
+                        if edge[0] == cycle[0][-1]:
+                            # if the newest node is our first node, the cycle is complete
+                            if cycle[0][0] == edge[1]and cycle[1] + edge[2] > min_score:
+                                # the cycle is complete so we add it to complete_cycles
+                                return True, cycle[0]+(edge[1],), cycle[1] + edge[2]
+                            elif edge[1] not in cycle[0] and cycle[1] + edge[2] > min_score:
+                                # the cycle isn't finished so we add it to the new possible cycles,
+                                # if a subsidiary cycle is found, that cycle will also be found elsewhere
+                                # and we no longer need this part
+
+                                new_possible_cycles.add((cycle[0] + (edge[1],), cycle[1] + edge[2]))
+                                found_nodes.add(edge[1])
+                possible_cycles = new_possible_cycles
+                for edge in edges_in_cycles:
+                    edge[1].update_distance(edge[0].distance - edge[2])
+
+        return False, [], -1
+
 
     def set_non_allowable_values(self, complete_cycles):
         """
@@ -407,7 +478,6 @@ class Graph:
             minimal_cyclable = node.minimal_cyclable
             positive_cycle_value = optimal_cycle[1]
 
-
             # O(V²) as long as we assume that the maximum amount of disequalities a node can have is fixed
             non_cyclables = cleanup_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
             # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
@@ -463,7 +533,7 @@ class Graph:
         :param chains: the list of bounded chains
         :return: the bounded chains after removing the non-trivial unbounded values, i.e the complement of U0
         """
-        self.U_n = Un(self,  chains)  # generate U_0
+        self.U_n = Un(self, chains)  # generate U_0
         top = self.top()  # get the value Top a polynomial based on the amount of nodes
         change = True
         n = 0
