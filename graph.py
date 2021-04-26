@@ -153,7 +153,7 @@ class Graph:
         res = 0, [], -1
         while minval <= maxval:
             test_val = (maxval + minval) // 2
-            result = self._locate_cycle_bellman2([node], test_val, 0)
+            result = self._locate_cycle_bellman([node], test_val, 0)
             if result[0]:
                 res = test_val, result[1], result[2]
                 new_minval = test_val
@@ -170,7 +170,7 @@ class Graph:
 
         return res
 
-    def _locate_cycle_bellman2(self, current_path, min_score, current_score=0, goal_node=None):
+    def _locate_cycle_bellman(self, current_path, min_score, current_score=0, goal_node=None):
         """
                 the cycle_location method using bellman ford in a polynomial manner,
                 made as place in replacement to the _locate_cycle_df method
@@ -260,8 +260,8 @@ class Graph:
                             # Luckily, we don't have to, since this can only really occur once for each node in the cycle (except the starternode)
                             # sw we need to rerun (part of) the algorithm at most O(V) times
                             cycle = cycle[:cycle.index(current_node)]
-                            val = self._locate_cycle_bellman2([starter_node], min_score, original_current_score,
-                                                              current_node)
+                            val = self._locate_cycle_bellman([starter_node], min_score, original_current_score,
+                                                             current_node)
                             val[1].reverse()
                             cycle += val[1][:-1]
                             current_node = val[1][-1]
