@@ -265,12 +265,14 @@ class Graph:
 
     def _locate_cycle_dfs(self, current_path, min_score, current_score):
         """
+        DEPRECATED
         the recursive function to acquire a positive cycle with a pmin higher than (or equal to minscore) using depth first search
         this method is not used due to its exponential nature
         :param current_path: a list of all nodes we have already visited
         :param min_score: the current minimal score, if we go below, we need to try another path
         :param current_score: the current score of our cycle
         :return: successbool, complete_cycle (if succesful else []), weight of the cycle (if succesfull else -1)
+        DEPRECATED
         """
 
         if current_path[0] == current_path[-1] and len(current_path) > 1:
@@ -288,12 +290,14 @@ class Graph:
 
     def _locate_cycle_bellman(self, current_path, min_score, current_score):
         """
+        DEPRECATED DUE TO exponential nature
         the cycle_location method using bellman ford, made as place in replacement to the _locate_cycle_df
         method
         :param current_path: a list of all nodes we have already visited
         :param min_score: the current minimal score, if we go below, we need to try another path
         :param current_score: the current score of our cycle
         :return: successbool, complete_cycle (if succesful else []), weight of the cycle (if succesfull else -1)
+        DEPRECATED
         """
         self.reset_distances()
         # start by setting up bellman so no infinities remain (if everything is reachable)
@@ -362,7 +366,7 @@ class Graph:
 
         return False, [], -1
 
-    def _locate_cycle_bellman2(self, current_path, min_score, current_score=0, goal_node= None):
+    def _locate_cycle_bellman2(self, current_path, min_score, current_score=0, goal_node=None):
         """
                 the cycle_location method using bellman ford in a polynomial manner,
                 made as place in replacement to the _locate_cycle_df method
@@ -376,7 +380,7 @@ class Graph:
         self._reset_pmins()
         # start by setting up bellman so no infinities remain (if everything is reachable)
         self.bellman_ford_alg()
-        original_current_score=current_score
+        original_current_score = current_score
         edges_in_cycles = set()
         starter_node = current_path[0]
         if goal_node is None:
@@ -452,7 +456,8 @@ class Graph:
                             # Luckily, we don't have to, since this can only really occur once for each node in the cycle (except the starternode)
                             # sw we need to rerun (part of) the algorithm at most O(V) times
                             cycle = cycle[:cycle.index(current_node)]
-                            val = self._locate_cycle_bellman2([starter_node], min_score, original_current_score, current_node)
+                            val = self._locate_cycle_bellman2([starter_node], min_score, original_current_score,
+                                                              current_node)
                             val[1].reverse()
                             cycle += val[1][:-1]
                             current_node = val[1][-1]
