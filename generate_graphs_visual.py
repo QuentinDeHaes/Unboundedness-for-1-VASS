@@ -128,3 +128,28 @@ def generate_double_cycle() -> Tuple[Graph, List[Node]]:
     g = Graph(s0)
     g.set_nodes([s0, s1, s2, s3, s4, s5])
     return g, [s0, s1, s2, s3, s4, s5]
+
+
+def generate_double_cycle2() -> Tuple[Graph, List[Node]]:
+    s0 = Node(0)
+    s1 = Node(1)
+    s2 = Node(2)
+    s3 = Node(3)
+    s4 = Node(4)
+    s5 = Node(5)
+    s0.add_edge(s1, 2)
+    s1.add_edge(s2, 1)
+    s2.add_edge(s3, 3)
+    s3.add_edge(s4, 2)
+    s4.add_edge(s0, 2)
+    s2.add_edge(s5, 1)
+    s5.add_edge(s2, 1)
+    s0.add_disequality(25)
+    s1.add_disequality(27)
+    s2.add_disequality(28)
+    s3.add_disequality(31)
+    s4.add_disequality(23)
+    s5.add_disequality(25)
+    g = Graph(s0)
+    g.set_nodes([s0, s1, s2, s3, s4, s5])
+    return g, [s0, s1, s2, s3, s4, s5]

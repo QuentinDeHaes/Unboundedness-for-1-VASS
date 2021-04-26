@@ -54,5 +54,11 @@ class MyTestCase(unittest.TestCase):
         g, nodes = generate_1_pos_neg_cyc_unbounded()
         res = Coverability_in_1Vass_w_Disequality_guards(g, (g.start_node, 0))
         self.assertTrue(res)
+
+        g, nodes = generate_double_cycle2()
+        res = Coverability_in_1Vass_w_Disequality_guards(g, (g.start_node, 0))
+        self.assertTrue(res)
+
+
 if __name__ == '__main__':
     unittest.main()
