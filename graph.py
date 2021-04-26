@@ -373,7 +373,7 @@ class Graph:
                 :return: successbool, complete_cycle (if succesful else []), weight of the cycle (if succesfull else -1)
                 """
         self.reset_distances()
-        self.reset_pmins()
+        self._reset_pmins()
         # start by setting up bellman so no infinities remain (if everything is reachable)
         self.bellman_ford_alg()
         original_current_score=current_score
@@ -440,6 +440,17 @@ class Graph:
                             cycle.append(current_node)
                             current_node = current_node.pminval[0]
                         else:
+                            # it is possible that another (smaller in node amount) positive cycle has
+                            # embedded itself into our solution, where we can't go backward anymore, because we'd
+                            # continuously update the new cycle and thus create an infinite cycle within our cycle,
+                            # since this is not something we want, we'd want to back in time to the point where
+                            # pminval did not yet have this internal cycle there,
+                            # and while we can't turn back time, we can just rerun part of the algorithm until we reach
+                            # the point where the internal cycle does not yet exist, but we still have reached the wanted node,
+                            # which is the first node we noticed in the cycle.
+                            # we cannot redo the algorithm an infinite amount of times, since that wouldn't be polynomial.
+                            # Luckily, we don't have to, since this can only really occur once for each node in the cycle (except the starternode)
+                            # sw we need to rerun (part of) the algorithm at most O(V) times
                             cycle = cycle[:cycle.index(current_node)]
                             val = self._locate_cycle_bellman2([starter_node], min_score, original_current_score, current_node)
                             val[1].reverse()
@@ -455,7 +466,12 @@ class Graph:
 
         return False, [], -1
 
-    def reset_pmins(self):
+    def _reset_pmins(self):
+        """
+        a subsidiary function for the bellman-ford alteration of locating cycles that will reset
+        a variable in every node back to the original value of (None, -inf)
+        :return: None
+        """
         for node in self.nodes:
             node.pminval = (None, float("-inf"))
 
