@@ -23,7 +23,8 @@ def Coverability_in_1Vass_w_Disequality_guards(g, source, print_closures=False):
 
 
 if __name__ == "__main__":
-    g = generate_example()
+    g, nodes = generate_1_pos_neg_cyc()
+
     g.to_dot("dot.dot")
     is_reachable = Coverability_in_1Vass_w_Disequality_guards(g, (g.start_node, 0), True)
     print(is_reachable)

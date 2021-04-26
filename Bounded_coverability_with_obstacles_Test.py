@@ -3,9 +3,11 @@ import unittest
 import Bounded_coverability_with_obstacles
 import generate_example
 from generate_graphs import *
+from CONFIG import CONFIG
 
 
 class MyTestCase(unittest.TestCase):
+    CONFIG['testing'] = True
     g = generate_example.generate_example()
     s0 = g.start_node
     s1 = s0.get_edges()[0][0]

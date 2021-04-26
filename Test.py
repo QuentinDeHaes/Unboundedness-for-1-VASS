@@ -5,10 +5,11 @@ from generate_example import generate_example
 from helper_functions import *
 from Closure import Closure
 import math
-
+from CONFIG import CONFIG
 
 
 class MyTestCase(unittest.TestCase):
+    CONFIG["testing"]= True
     g = generate_example()
     s0 = g.start_node
     s1 = s0.get_edges()[0][0]

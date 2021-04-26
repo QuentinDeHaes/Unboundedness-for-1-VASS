@@ -7,9 +7,10 @@ from helper_functions import *
 from Closure import Closure
 import math
 from generate_graphs_paper import generate_1_pos_neg_cyc, generate_lossy_cycle, generate_1_pos_cyc
-
+from CONFIG import CONFIG
 
 class MyTestCase(unittest.TestCase):
+    CONFIG['testing'] = True
     def test_something(self):
         self.assertEqual(True, True)
 
