@@ -2,6 +2,7 @@ from Node import *
 from graph import *
 from generate_example import *
 from generate_graphs_paper import generate_1_pos_neg_cyc
+from CONFIG import CONFIG
 
 
 def Coverability_in_1Vass_w_Disequality_guards(g, source, print_closures=False):
@@ -23,8 +24,9 @@ def Coverability_in_1Vass_w_Disequality_guards(g, source, print_closures=False):
 
 
 if __name__ == "__main__":
-    g, nodes = generate_1_pos_neg_cyc()
+    CONFIG["testing"]=True
+    g = generate_example()
 
     g.to_dot("dot.dot")
     is_reachable = Coverability_in_1Vass_w_Disequality_guards(g, (g.start_node, 0), True)
-    print(is_reachable)
+    print("Is the 1-VASS unbounded?:{}".format(is_reachable))
