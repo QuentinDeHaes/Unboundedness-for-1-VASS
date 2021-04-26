@@ -31,22 +31,10 @@ class Closure:
                 return True
         return False
 
-    def __len__(self):
-        """
-        DEPRECATED because len won't allow floats (so no inf)
-        give the "amount of items" this would contain if it were represented as a list
-
-
-        :return: (int) length/ float inf if inf
-        """
-        if self.minVal is None or self.maxVal is None:
-            return 0
-
-        return int((self.maxVal - self.minVal) / self.step + 1)
-
     def len(self):
         """
                 give the "amount of items" this would contain if it were represented as a list
+                 not the builtin function because it does not allow infinity
                 :return: (int) length/ float inf if inf
                 """
         if self.minVal is None or self.maxVal is None:
@@ -63,7 +51,7 @@ class Closure:
         if self.minVal is None:
             raise Exception("no minimal value")
 
-        if item >= len(self):
+        if item >= self.len():
             raise Exception("value out of bounds")
         return self.minVal + self.step * item
 

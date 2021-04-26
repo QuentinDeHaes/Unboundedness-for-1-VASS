@@ -34,7 +34,7 @@ class Un:
     the complete representation of Un required in the BoundedCoverWObstacles sub-routine
     """
 
-    def __init__(self, g,  complement):
+    def __init__(self, g, complement):
         """
         Initialize U_0 by using it's complement, the complement is given as a set of closures
         :param g: the graph

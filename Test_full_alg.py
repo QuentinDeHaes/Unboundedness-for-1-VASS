@@ -5,16 +5,15 @@ from generate_graphs import *
 from generate_graphs_visual import *
 
 
-
-
 class MyTestCase(unittest.TestCase):
-    CONFIG["testing"]=True
+    CONFIG["testing"] = True
+
     def test_something(self):
         self.assertNotEqual(True, False)
 
     def test_graph1(self):
-        g,nodes = generate_graph1()
-        res = Coverability_in_1Vass_w_Disequality_guards(g, (g.start_node,0))
+        g, nodes = generate_graph1()
+        res = Coverability_in_1Vass_w_Disequality_guards(g, (g.start_node, 0))
         self.assertTrue(res)
 
     def test_graph1_2(self):

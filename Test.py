@@ -78,7 +78,7 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(node.get_distance(), math.inf)
 
         self.g.bellman_ford_alg()
-        cycles = self.g.get_cycles_OLD()
+        cycles = self.g.get_cycles()
         self.assertEqual(len(cycles), 3, "all 3 cycles are not found")
         for cycle in cycles:
             if cycle[1] == 6:
@@ -194,15 +194,6 @@ class MyTestCase(unittest.TestCase):
         self.assertFalse(ans)
 
 
-    def test_new_cycling(self):
-        self.g.bellman_ford_alg()
-        cycles = self.g.get_cycles_OLD()
-
-        new_cycles = self.g.get_cycles()
-        for cycle in cycles:
-            for new_cycle in new_cycles:
-                if cycle[1] == new_cycle[1]:
-                    self.assertSetEqual(set(cycle[0]), set(new_cycle[0]))
 
     def test_new_graphs(self):
         g, nodes = generate_1_pos_neg_cyc()
