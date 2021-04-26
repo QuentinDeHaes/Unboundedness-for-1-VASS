@@ -6,6 +6,7 @@ from helper_functions import *
 from Closure import Closure
 import math
 from CONFIG import CONFIG
+from generate_graphs_visual import generate_1_pos_neg_cyc, generate_double_cycle, generate_1_pos_cyc
 
 
 class MyTestCase(unittest.TestCase):
@@ -202,6 +203,26 @@ class MyTestCase(unittest.TestCase):
             for new_cycle in new_cycles:
                 if cycle[1] == new_cycle[1]:
                     self.assertSetEqual(set(cycle[0]), set(new_cycle[0]))
+
+    def test_new_graphs(self):
+        g, nodes = generate_1_pos_neg_cyc()
+        cycles = g.get_cycles()
+        self.assertEqual(len(cycles), 1, "negative cycle added")
+
+    def test_faulty_cycle(self):
+        g, nodes = generate_double_cycle()
+        cycles = g.get_cycles()
+        self.assertEqual(len(cycles), 2, "cycle missed")
+        print(cycles)
+
+    def test_single_pos_cyc_chains(self):
+        g, nodes = generate_1_pos_cyc()
+        cycles = g.get_cycles()
+        g.set_non_allowable_values(cycles)
+        chains = g.get_bounded_chains()
+        self.assertEqual(len(cycles), 1, "incorrect cycles located")
+        self.assertIn(nodes[1], chains)
+        self.assertIn(nodes[2], chains)
 
 
 if __name__ == '__main__':

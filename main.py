@@ -1,7 +1,7 @@
 from Node import *
 from graph import *
 from generate_example import *
-from generate_graphs_paper import generate_1_pos_neg_cyc
+from generate_graphs_visual import generate_1_pos_neg_cyc
 from CONFIG import CONFIG
 
 
