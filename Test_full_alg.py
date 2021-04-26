@@ -6,6 +6,7 @@ from generate_graphs_visual import *
 
 
 class MyTestCase(unittest.TestCase):
+    """ test the entire algorithm on various 1-VASS"""
     CONFIG["testing"] = True
 
     def test_something(self):

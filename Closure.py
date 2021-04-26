@@ -17,19 +17,7 @@ class Closure:
         self.maxVal = maxVal
         self.step = step
 
-    def __contains__(self, value):
-        """
-        gives a boolean value to check whether the value is within the closure
-        :param value: the value to be checked
-        :return: True or False depending of whether it's part of the closure
-        O(1) as amount of steps is constant
-        """
 
-        if (self.minVal is None or self.minVal <= value) and (self.maxVal is None or value <= self.maxVal):
-            if (self.minVal is None and value % self.step == self.maxVal % self.step) or (
-                    value % self.step == self.minVal % self.step):
-                return True
-        return False
 
     def len(self):
         """
@@ -44,6 +32,7 @@ class Closure:
 
     def __getitem__(self, item):
         """
+        UNUSED
         return the item on index item if the closure was represented as a list
         :param item: the index we need to return
         :return: the value on location item
@@ -55,25 +44,6 @@ class Closure:
             raise Exception("value out of bounds")
         return self.minVal + self.step * item
 
-    def __eq__(self, other) -> bool:
-        if isinstance(other,
-                      Closure) and self.maxVal == other.maxVal and self.minVal == other.minVal and self.step == other.step:
-            return True
-        if isinstance(other, list) and len(other) == self.len():
-            minitem = self.minVal - 1
-            val = True
-            for item in other:
-                if not item in self or not item > minitem:
-                    val = False
-                    break
-                minitem = item
-
-            return val
-
-        return False
-
-    def __ne__(self, other):
-        return not self == other
 
     def find_index(self, value):
         """

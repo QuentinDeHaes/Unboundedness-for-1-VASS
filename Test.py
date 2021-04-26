@@ -57,15 +57,6 @@ class MyTestCase(unittest.TestCase):
             a = clos[8]
         with self.assertRaises(Exception):
             a = clos2[1]
-        self.assertTrue(8 in clos)
-        self.assertTrue(6 in clos)
-        self.assertTrue(15 not in clos)
-        self.assertTrue(-60 in clos2)
-        self.assertTrue(12 not in clos2)
-        self.assertTrue(clos == [6, 8, 10, 12, 14, 16])
-        closnew = Closure(6, 16, 2)
-        self.assertTrue(clos == closnew)
-        self.assertTrue(clos != [12, 6, 8])
         closWrong = Closure(7, 6, 12)
         self.assertEqual(closWrong.len(), 1)
 
