@@ -246,7 +246,7 @@ class Graph:
         res = 0, [], -1
         while minval <= maxval:
             test_val = (maxval + minval) // 2
-            result = self._locate_cycle_dfs([node], test_val, 0)
+            result = self._locate_cycle_bellman2([node], test_val, 0)
             if result[0]:
                 res = test_val, result[1], result[2]
                 new_minval = test_val
@@ -265,7 +265,8 @@ class Graph:
 
     def _locate_cycle_dfs(self, current_path, min_score, current_score):
         """
-        the recursive function to acquire a positive cycle with a pmin higher than (or equal to minscore)
+        the recursive function to acquire a positive cycle with a pmin higher than (or equal to minscore) using depth first search
+        this method is not used due to its exponential nature
         :param current_path: a list of all nodes we have already visited
         :param min_score: the current minimal score, if we go below, we need to try another path
         :param current_score: the current score of our cycle
@@ -300,7 +301,7 @@ class Graph:
         edges_in_cycles = set()
         starter_node = current_path[0]
         success = False
-        for i in range(len(self.nodes) - 1):
+        for i in range(len(self.nodes)):
             # update distances from previous run
             # O(E)
             for edge in edges_in_cycles:
@@ -325,13 +326,13 @@ class Graph:
         if success:
             possible_cycles = {((starter_node,), current_score)}
             found_nodes = {starter_node}
-            for i in range(len(self.nodes) - 1):
+            for i in range(len(self.nodes)):
 
                 edges_in_cycles = set()
                 for node in found_nodes:
                     for edge in node.edges:
                         # if ,after already doing entire bellman ford, there still is a change in the distance,
-                        # there exists a negative cycle, we will add this new node to the list
+                        # there exists a positive cycle, we will add this new node to the list
                         if edge[0].distance > node.distance - edge[1]:
                             edges_in_cycles.add((node, edge[0], edge[1]))
                 new_possible_cycles = set()
@@ -345,9 +346,9 @@ class Graph:
                         # making these for-loops O(EV³)
                         if edge[0] == cycle[0][-1]:
                             # if the newest node is our first node, the cycle is complete
-                            if cycle[0][0] == edge[1]and cycle[1] + edge[2] > min_score:
+                            if cycle[0][0] == edge[1] and cycle[1] + edge[2] > min_score:
                                 # the cycle is complete so we add it to complete_cycles
-                                return True, cycle[0]+(edge[1],), cycle[1] + edge[2]
+                                return True, cycle[0] + (edge[1],), cycle[1] + edge[2]
                             elif edge[1] not in cycle[0] and cycle[1] + edge[2] > min_score:
                                 # the cycle isn't finished so we add it to the new possible cycles,
                                 # if a subsidiary cycle is found, that cycle will also be found elsewhere
@@ -361,6 +362,102 @@ class Graph:
 
         return False, [], -1
 
+    def _locate_cycle_bellman2(self, current_path, min_score, current_score=0, goal_node= None):
+        """
+                the cycle_location method using bellman ford in a polynomial manner,
+                made as place in replacement to the _locate_cycle_df method
+                :param current_path: a list of all nodes we have already visited, initially set to our single starternode
+                :param min_score: the current minimal score, if we go below, we need to try another path
+                :param current_score: the current score of our cycle
+                :param goal_node: the node we are trying to reach, if None, it will be set to the starternode in currentpath
+                :return: successbool, complete_cycle (if succesful else []), weight of the cycle (if succesfull else -1)
+                """
+        self.reset_distances()
+        self.reset_pmins()
+        # start by setting up bellman so no infinities remain (if everything is reachable)
+        self.bellman_ford_alg()
+        original_current_score=current_score
+        edges_in_cycles = set()
+        starter_node = current_path[0]
+        if goal_node is None:
+            goal_node = starter_node
+        success = False
+        for i in range(len(self.nodes)):
+            # update distances from previous run
+            # O(E)
+            for edge in edges_in_cycles:
+                edge[1].update_distance(edge[0].distance - edge[2])
+            edges_in_cycles = set()
+
+            for node in self.nodes:
+                for edge in node.edges:
+                    # if ,after already doing entire bellman ford, there still is a change in the distance,
+                    # there exists a negative cycle, we will add this new node to the list
+                    if edge[0].distance > node.distance - edge[1]:
+                        edges_in_cycles.add((node, edge[0], edge[1]))
+                        # keep updating the graph until our starternode is the one that will be updating new nodes using it's edges
+                        if node == starter_node:
+                            success = True
+                            break
+                if success:
+                    break
+            if success:
+                break
+
+        if success:
+            starter_node.pminval = (None, current_score)
+
+            found_nodes = {starter_node}
+
+            for i in range(len(self.nodes)):
+
+                edges_in_cycles = set()
+                for node in found_nodes:
+                    for edge in node.edges:
+                        # if ,after already doing entire bellman ford, there still is a change in the distance,
+                        # there exists a positive cycle, we will add this new node to the list
+                        if edge[0].distance > node.distance - edge[1] and node.pminval[1] + edge[1] >= min_score:
+                            edges_in_cycles.add((node, edge[0], edge[1]))
+                found_nodes = set()
+
+                for edge in edges_in_cycles:
+                    # every edge can only be in here once at a time, making this O(E)
+                    if edge[1].pminval[1] < edge[0].pminval[1] + edge[2]:
+                        # update the node and pminvalue etc only if it is actually an improvement to before
+                        edge[1].update_distance(edge[0].distance - edge[2])
+                        edge[1].pminval = (edge[0], edge[0].pminval[1] + edge[2])
+                        found_nodes.add(edge[1])
+                if goal_node.pminval[0] is not None:
+                    # we have located a cycle that does not violate our current minimal pmin, so now we'll generate the
+                    # cycle from back to forward by checking from where the update of the previous node came, checking
+                    # where the update of that node came from, until we reach the starternode once more
+                    # O(V) due to it not being a cycle otherwise
+
+                    cycle = [goal_node]
+                    current_node = goal_node.pminval[0]
+                    while current_node != starter_node:
+                        if current_node not in cycle:
+                            cycle.append(current_node)
+                            current_node = current_node.pminval[0]
+                        else:
+                            cycle = cycle[:cycle.index(current_node)]
+                            val = self._locate_cycle_bellman2([starter_node], min_score, original_current_score, current_node)
+                            val[1].reverse()
+                            cycle += val[1][:-1]
+                            current_node = val[1][-1]
+                    cycle.append(starter_node)
+                    cycle.reverse()
+                    score = sum(list(get_distances_in_path(cycle)))
+                    if score > 0:
+                        return True, cycle, score
+                    else:
+                        return False, cycle, -1
+
+        return False, [], -1
+
+    def reset_pmins(self):
+        for node in self.nodes:
+            node.pminval = (None, float("-inf"))
 
     def set_non_allowable_values(self, complete_cycles):
         """
