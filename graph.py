@@ -171,7 +171,7 @@ class Graph:
         return res
 
     def _locate_cycle_bellman(self, current_path, min_score, current_score=0, goal_node=None):
-        """
+        """t
                 the cycle_location method using bellman ford in a polynomial manner,
                 made as place in replacement to the _locate_cycle_df method (which was removed because it was not polynomial)
                 :param current_path: a list of all nodes we have already visited, initially set to our single starternode
