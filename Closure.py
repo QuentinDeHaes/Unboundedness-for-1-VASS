@@ -59,7 +59,8 @@ class Closure:
 
     def get_index_list(self, start, end):
         """
-        get a list values from index start to index end
+        get a list values from index start to index end (not necessarily polynomial)
+        used only when ensured only a polynomial amount of items (top) remain in closure
         :param start:
         :param end:
         :return:
