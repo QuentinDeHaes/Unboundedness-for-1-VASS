@@ -4,7 +4,7 @@
  
  ### usage
  In order to use the project, a proper graph object needs to be written in python to represent your graph and returned in a function.
- An example on how to create such a graph can be found [here](./generate_graphs/generate_example)
+ An example on how to create such a graph can be found [here](./generate_graphs/generate_example.py)
  #### command
  Once the graph is created, a single command needs to be run for running the algorithm:
  
