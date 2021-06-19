@@ -5,13 +5,15 @@ from generate_graphs_visual import generate_1_pos_neg_cyc
 from CONFIG import CONFIG
 import sys
 import importlib
+
+
 def Coverability_in_1Vass_w_Disequality_guards(g, source, print_closures=False):
     cycles = g.get_cycles()
     if print_closures:
         for c in cycles:
-            print('cycle with {} nodes and weight {} and node_ids:'.format(len(c[0])-1, c[1]), end='')
+            print('cycle with {} nodes and weight {} and node_ids:'.format(len(c[0]) - 1, c[1]), end='')
             print(c[0][0].id, end='')
-            for i in range(1, len(c[0])-1):
+            for i in range(1, len(c[0]) - 1):
                 print(',{}'.format(c[0][i].id), end='')
 
             print('')
@@ -35,8 +37,6 @@ def Coverability_in_1Vass_w_Disequality_guards(g, source, print_closures=False):
 if __name__ == "__main__":
     # python main.py graph_file graph_method show_debug shortened_polys
 
-
-
     try:
         # print(sys.argv)
         module = importlib.import_module(sys.argv[1])
@@ -46,13 +46,13 @@ if __name__ == "__main__":
         raise Exception("unable to acquire graph method")
 
     try:
-        debug_print = sys.argv[3]
+        debug_print = sys.argv[3].lower() == 'true'
     except:
         debug_print = False
 
     try:
 
-        CONFIG["testing"]=sys.argv[4]
+        CONFIG["testing"] = sys.argv[4].lower() == 'true'
     except:
         CONFIG["testing"] = False
     # g = generate_example()

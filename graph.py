@@ -224,7 +224,8 @@ class Graph:
                     for edge in node.edges:
                         # if ,after already doing entire bellman ford, there still is a change in the distance,
                         # there exists a positive cycle, we will add this new node to the list
-                        if edge[0].distance > node.distance - edge[1] and node.pminval[1] + edge[1] >= min_score and edge[0] not in node.pminval[0][1:]:
+                        if edge[0].distance > node.distance - edge[1] and node.pminval[1] + edge[1] >= min_score and \
+                                edge[0] not in node.pminval[0][1:]:
                             edges_in_cycles.add((node, edge[0], edge[1]))
                 found_nodes = set()
 
@@ -233,15 +234,14 @@ class Graph:
                     if edge[1].pminval[1] < edge[0].pminval[1] + edge[2]:
                         # update the node and pminvalue etc only if it is actually an improvement to before
                         edge[1].update_distance(edge[0].distance - edge[2])
-                        edge[1].pminval = (edge[0].pminval[0]+[edge[0]], edge[0].pminval[1] + edge[2])
+                        edge[1].pminval = (edge[0].pminval[0] + [edge[0]], edge[0].pminval[1] + edge[2])
                         found_nodes.add(edge[1])
                 if goal_node.pminval[0] != []:
-                    return True, goal_node.pminval[0]+[goal_node], goal_node.pminval[1]
+                    return True, goal_node.pminval[0] + [goal_node], goal_node.pminval[1]
                     # we have located a cycle that does not violate our current minimal pmin, so now we'll generate the
                     # cycle from back to forward by checking from where the update of the previous node came, checking
                     # where the update of that node came from, until we reach the starternode once more
                     # O(V) due to it not being a cycle otherwise
-
 
         return False, [], -1
 
