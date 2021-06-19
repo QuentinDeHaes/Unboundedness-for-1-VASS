@@ -1,0 +1,3 @@
+python Test_cycles.py
+python Test_bounded_coverability_with_obstacles.py
+python Test_full_alg.py
