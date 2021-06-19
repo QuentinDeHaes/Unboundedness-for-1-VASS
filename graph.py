@@ -109,7 +109,7 @@ class Graph:
             # by going over all nodes and their outgoing edges, we go over all edges
             for node in self.nodes:
                 for edge in node.edges:
-                    edge[0].update_distance(node.distance + edge[1])
+                    edge[0].update_distance(node.distance - edge[1])
 
     def get_cycles(self):
         """
@@ -242,37 +242,6 @@ class Graph:
                     # where the update of that node came from, until we reach the starternode once more
                     # O(V) due to it not being a cycle otherwise
 
-                    cycle = [goal_node]
-                    current_node = goal_node.pminval[0]
-                    while current_node != starter_node:
-                        if current_node not in cycle:
-                            cycle.append(current_node)
-                            current_node = current_node.pminval[0]
-                        else:
-                            # it is possible that another (smaller in node amount) positive cycle has
-                            # embedded itself into our solution, where we can't go backward anymore, because we'd
-                            # continuously update the new cycle and thus create an infinite cycle within our cycle,
-                            # since this is not something we want, we'd want to back in time to the point where
-                            # pminval did not yet have this internal cycle there,
-                            # and while we can't turn back time, we can just rerun part of the algorithm until we reach
-                            # the point where the internal cycle does not yet exist, but we still have reached the wanted node,
-                            # which is the first node we noticed in the cycle.
-                            # we cannot redo the algorithm an infinite amount of times, since that wouldn't be polynomial.
-                            # Luckily, we don't have to, since this can only really occur once for each node in the cycle (except the starternode)
-                            # sw we need to rerun (part of) the algorithm at most O(V) times
-                            cycle = cycle[:cycle.index(current_node)]
-                            val = self._locate_cycle_bellman([starter_node], min_score, original_current_score,
-                                                             current_node)
-                            val[1].reverse()
-                            cycle += val[1][:-1]
-                            current_node = val[1][-1]
-                    cycle.append(starter_node)
-                    cycle.reverse()
-                    score = sum(list(get_distances_in_path(cycle)))
-                    if score > 0:
-                        return True, cycle, score
-                    else:
-                        return False, cycle, -1
 
         return False, [], -1
 
