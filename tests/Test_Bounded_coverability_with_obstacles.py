@@ -1,8 +1,8 @@
 import unittest
 
 import Bounded_coverability_with_obstacles
-import generate_example
-from generate_graphs import *
+import generate_graphs.generate_example as generate_example
+from generate_graphs.generate_graphs import *
 from CONFIG import CONFIG
 
 

@@ -1,8 +1,8 @@
 import unittest
 from main import Coverability_in_1Vass_w_Disequality_guards
 from CONFIG import CONFIG
-from generate_graphs import *
-from generate_graphs_visual import *
+from generate_graphs.generate_graphs import *
+from generate_graphs.generate_graphs_visual import *
 
 
 class MyTestCase(unittest.TestCase):
@@ -32,7 +32,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_graphs_visual(self):
         """
-        test all the graphs that have a visual representation
+        test all the graphs_visuals that have a visual representation
         :return:
         """
         g, nodes = generate_1_pos_cyc()

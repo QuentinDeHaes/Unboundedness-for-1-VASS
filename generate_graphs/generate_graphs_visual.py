@@ -3,7 +3,7 @@ from Node import Node
 from typing import Tuple, List
 
 """
-ALL of these graphs have a visual version with the same name in the graphs folder
+ALL of these graphs_visuals have a visual version with the same name in the graphs_visuals folder
 """
 
 def generate_1_pos_neg_cyc() -> Tuple[Graph, List[Node]]:
