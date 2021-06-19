@@ -9,6 +9,8 @@
  Once the graph is created, a single command needs to be run for running the algorithm:
  
  > python main \[module_name\] \[function_name\] \[True/False (optional)\] \[True/False (optional)\]
+
+
  set the first boolean as True if you wish to acquire extra debug information regarding the algorithm
  default = False
  
