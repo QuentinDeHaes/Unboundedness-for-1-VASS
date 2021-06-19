@@ -1,3 +1,2 @@
-python Test_cycles.py
-python Test_bounded_coverability_with_obstacles.py
-python Test_full_alg.py
+echo 'running 23 different tests'
+python -m unittest discover -s tests -p 'Test_*.py'

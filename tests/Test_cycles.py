@@ -2,7 +2,7 @@ import unittest
 from graph import Graph
 from Node import Node
 from generate_example import generate_example
-from helper_functions import *
+import helper_functions
 from Closure import Closure
 import math
 from CONFIG import CONFIG
@@ -34,14 +34,14 @@ class MyTestCase(unittest.TestCase):
 
     def test_helper_functions(self):
 
-        value = get_distances_in_path((self.s0, self.s1, self.s3))
+        value = helper_functions.get_distances_in_path((self.s0, self.s1, self.s3))
         self.assertEqual(value, (12, 12), "distances in the path of nodes does not work")
 
-        value = chain_max_non_cyclables([1, 2, 5, 6, 8, 9, 12], 4, 4)
+        value = helper_functions.chain_max_non_cyclables([1, 2, 5, 6, 8, 9, 12], 4, 4)
         compare_dict = {0: 12, 1: 9, 2: 6}
         self.assertEqual(value, compare_dict, "chain_max_non_cyclables not working")
 
-        value = cleanup_non_cyclables([1, 2, 5, 6, 8, 9, 12], 4, 4)
+        value = helper_functions.cleanup_non_cyclables([1, 2, 5, 6, 8, 9, 12], 4, 4)
         compare_dict = {0: [8, 12], 1: [5, 9], 2: [6]}
         self.assertEqual(value, compare_dict, "cleanup_non_cyclables not working")
 
@@ -156,7 +156,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_get_all_nodes_from_cycles(self):
         cycles = self.g.get_cycles()
-        val = get_all_nodes_from_cycles(cycles)
+        val = helper_functions.get_all_nodes_from_cycles(cycles)
         self.assertSetEqual(val, {self.s1, self.s2, self.s4, self.s5, self.s6, self.s10, self.s11, self.s12, self.s13})
 
     def test_turn_cycle(self):
@@ -167,21 +167,21 @@ class MyTestCase(unittest.TestCase):
             if c[1] == 9:
                 cycle = c[0]
 
-        newcycle = turn_cycle(cycle, self.s5)
+        newcycle = helper_functions.turn_cycle(cycle, self.s5)
         self.assertEqual(newcycle, (self.s5, self.s6, self.s4, self.s5))
-        newcycle2 = turn_cycle(cycle, self.s6)
+        newcycle2 = helper_functions.turn_cycle(cycle, self.s6)
         self.assertEqual(newcycle2, (self.s6, self.s4, self.s5, self.s6))
 
     def test_check_primitive(self):
         cycles = self.g.get_cycles()
         value = (self.s4, 5, (self.s0, self.s1, self.s3))
-        ans = check_primitive(value, cycles)
+        ans = helper_functions.check_primitive(value, cycles)
         self.assertTrue(ans)
         value = (self.s1, 5, (self.s1, self.s2))
-        ans = check_primitive(value, cycles)
+        ans = helper_functions.check_primitive(value, cycles)
         self.assertTrue(ans)
         value = (self.s1, 5, (self.s0, self.s1, self.s2))
-        ans = check_primitive(value, cycles)
+        ans = helper_functions.check_primitive(value, cycles)
         self.assertFalse(ans)
 
 
@@ -195,7 +195,6 @@ class MyTestCase(unittest.TestCase):
         g, nodes = generate_double_cycle()
         cycles = g.get_cycles()
         self.assertEqual(len(cycles), 2, "cycle missed")
-        print(cycles)
 
     def test_single_pos_cyc_chains(self):
         g, nodes = generate_1_pos_cyc()
