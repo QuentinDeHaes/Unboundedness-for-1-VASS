@@ -8,7 +8,7 @@
  #### command
  Once the graph is created, a single command needs to be run for running the algorithm:
  
- > python main \[module_name\] \[function_name\] \[True/False (optional)\] \[True/False (optional)\]
+ > python main.py \[module_name\] \[function_name\] \[True/False (optional)\] \[True/False (optional)\]
 
 
  set the first boolean as True if you wish to acquire extra debug information regarding the algorithm
@@ -18,6 +18,13 @@
  smaller polynomial does not ensure correctness if False is returned as unboundedness, but with simpler graphs it can greatly reduce time of algorithm
  default = False
  
+ ##### example
+  >python main.py generate_graphs.generate_example generate_example True True
+
+
+ ### tests
+ all the tests can be found in the tests folder and can be run from 
+ >run_tests.sh
 
  
   
