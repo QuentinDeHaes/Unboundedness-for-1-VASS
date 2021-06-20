@@ -17,8 +17,6 @@ class Closure:
         self.maxVal = maxVal
         self.step = step
 
-
-
     def len(self):
         """
                 give the "amount of items" this would contain if it were represented as a list
@@ -43,7 +41,6 @@ class Closure:
         if item >= self.len():
             raise Exception("value out of bounds")
         return self.minVal + self.step * item
-
 
     def find_index(self, value):
         """

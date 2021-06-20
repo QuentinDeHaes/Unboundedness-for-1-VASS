@@ -1,6 +1,7 @@
 import math
 from copy import copy
 
+
 class Node:
     """
     a single node from our graph
