@@ -380,12 +380,12 @@ class Graph:
         L = Q * pow(poly1, 2) + Q * Q + 3
         return L
 
-    def bndCoverWObstacles(self, cycles, chains):
+    def Unbounded(self, cycles, chains):
         """
-        the method used to acquire the non-trivial unbounded values
+        the method used to acquire the non-trivial unbounded values, the entire U_n
         :param cycles: the list of all cycles
         :param chains: the list of bounded chains
-        :return: the bounded chains after removing the non-trivial unbounded values, i.e the complement of U0
+        :return: the bounded chains after removing the non-trivial unbounded values, i.e the complement of U_n
         """
         self.U_n = Un(self, chains)  # generate U_0
         top = self.top()  # get the value Top a polynomial based on the amount of nodes
