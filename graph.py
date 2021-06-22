@@ -296,32 +296,10 @@ class Graph:
                     cycle[0][node_i].minimal_cyclable = -minimal_add
                     cycle[0][node_i].optimal_cycle = cycle
 
-    def get_unbounded_chains(self):
-        """
-        for our algorithm, we need U₀, which is the unbounded chains from the positive cycles, they are unbounded,
-        thus they will be represented using upward closures, we only need the chains above the disequalities
-         (the amount of disequalties is bounded by O(V), so the amount of chains we need is also bounded by O(V)
-        :return: None (the changes happen within the graph)
-        O(V⁴)
-
-        """
-        self.U0 = list()
-        for node in self.nodes_in_cycles:
-            optimal_cycle = node.optimal_cycle
-            non_cyclables = node.non_cyclables
-            minimal_cyclable = node.minimal_cyclable
-            positive_cycle_value = optimal_cycle[1]
-            # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
-            non_cyclables = chain_max_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
-            # O(V) as each node can have as many non_cyclables as disequalities in the cycle (which is bounded by nodes)
-            for non_cyc in non_cyclables:
-                self.U0.append((node,
-                                Closure(non_cyclables[non_cyc] + positive_cycle_value, None, positive_cycle_value)))
-
     def get_bounded_chains(self):
         """
         in order to continue our algorithm, we need the bounded chains, so we'll calculate them
-        O(V⁴)
+        O(V³)
         """
         bounded_chains = dict(list())
         # O(V²) to run over all cycles
