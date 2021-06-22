@@ -31,7 +31,6 @@ def Coverability_in_1Vass_w_Disequality_guards(g, source, print_closures=False):
 
 
 if __name__ == "__main__":
-    # python main.py graph_file graph_method show_debug shortened_polys
 
     try:
         # print(sys.argv)
@@ -39,7 +38,7 @@ if __name__ == "__main__":
         function = getattr(module, sys.argv[2])
         g = function()
     except:
-        raise Exception("unable to acquire graph method")
+        raise Exception("unable to acquire graph function")
 
     try:
         debug_print = sys.argv[3].lower() == 'true'
