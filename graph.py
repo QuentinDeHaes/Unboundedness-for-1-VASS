@@ -380,10 +380,9 @@ class Graph:
         L = Q * pow(poly1, 2) + Q * Q + 3
         return L
 
-    def Unbounded(self, cycles, chains):
+    def Unbounded(self, chains):
         """
         the method used to acquire the non-trivial unbounded values, the entire U_n
-        :param cycles: the list of all cycles
         :param chains: the list of bounded chains
         :return: the bounded chains after removing the non-trivial unbounded values, i.e the complement of U_n
         """

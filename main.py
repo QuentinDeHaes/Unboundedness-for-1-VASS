@@ -18,7 +18,7 @@ def Coverability_in_1Vass_w_Disequality_guards(g, source, print_closures=False):
     # g.get_unbounded_chains()
     # g.to_dot("dot.dot")
     chains = g.get_bounded_chains()
-    new_chains, n = g.Unbounded(cycles, chains)
+    new_chains, n = g.Unbounded(chains)
     if print_closures:
         print("all values in positive cycles not in Un as chains:")
         for chain in new_chains:
