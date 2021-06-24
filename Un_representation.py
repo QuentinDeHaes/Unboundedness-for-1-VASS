@@ -117,7 +117,7 @@ class Un:
         """
         edit a non-trivial residue class (possibly allowing more values to be seen)
         :param node: the node for which the residue class needs to be edited
-        :param W: the wheigt of the class
+        :param W: the weight of the class
         :param allowed_a_i:  the allowed a_i from the non-triv q-res classes for this specific chain
         :param new_minval: the new minimal value allowed
         :param all_chains: a list of all (currently) bounded chains
