@@ -38,7 +38,6 @@ class Un:
         """
         Initialize U_0 by using it's complement, the complement is given as a set of closures
         :param g: the graph
-        :param cycles: a list of all cycles we have acquired from g.get_cycles()
         :param complement: the complement of U_n, i.e. a list of bounded chains
         """
         self.O_i = set()  # Where we add the trivial q-residue classes
