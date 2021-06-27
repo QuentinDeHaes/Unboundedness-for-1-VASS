@@ -2,7 +2,7 @@ import unittest
 from main import Coverability_in_1Vass_w_Disequality_guards
 from CONFIG import CONFIG
 from generate_graphs.generate_graphs import *
-from generate_graphs.generate_graphs_visual import *
+from generate_graphs.generate_graphs_visual_test import *
 
 
 class MyTestCase(unittest.TestCase):

@@ -6,7 +6,7 @@ import helper_functions
 from Closure import Closure
 import math
 from CONFIG import CONFIG
-from generate_graphs.generate_graphs_visual import generate_1_pos_neg_cyc, generate_double_cycle, generate_1_pos_cyc
+from generate_graphs.generate_graphs_visual_test import generate_1_pos_neg_cyc, generate_double_cycle, generate_1_pos_cyc
 
 
 class MyTestCase(unittest.TestCase):
