@@ -6,7 +6,7 @@ from typing import Tuple, List
 ALL of these graphs_visuals have a visual version with the same name in the graphs_visuals folder
 """
 
-def generate_1_pos_neg_cyc() -> Tuple[Graph, List[Node]]:
+def generate_1_pos_neg_cyc():
     """
     generate a graph with a positive and a negative cycle linked at a shared node
     :return: Graph, nodes
@@ -28,7 +28,7 @@ def generate_1_pos_neg_cyc() -> Tuple[Graph, List[Node]]:
     return g
 
 
-def generate_1_pos_neg_cyc_unbounded() -> Tuple[Graph, List[Node]]:
+def generate_1_pos_neg_cyc_unbounded():
     """
     generate a graph with a positive and a negative cycle linked at a shared node
     :return: Graph, nodes
