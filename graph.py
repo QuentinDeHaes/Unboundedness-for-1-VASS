@@ -313,8 +313,10 @@ class Graph:
             non_cyclables = cleanup_non_cyclables(non_cyclables, positive_cycle_value, minimal_cyclable)
             # O(V) as long as we assume that the maximum amount of disequalities a node can have is fixed
             for key in non_cyclables:
-                # value = int(minimal_cyclable / positive_cycle_value) * positive_cycle_value + key
-                value = minimal_cyclable + (6+key -(minimal_cyclable%positive_cycle_value))%positive_cycle_value
+                value = int(minimal_cyclable / positive_cycle_value) * positive_cycle_value + key
+                if value < minimal_cyclable:
+                    value+= positive_cycle_value
+                # value = minimal_cyclable + (6+(minimal_cyclable%positive_cycle_value)-key) % positive_cycle_value
                 if node not in bounded_chains:
                     bounded_chains[
                         node] = list()  # create the bounded chains of the node if they do not yet exist
